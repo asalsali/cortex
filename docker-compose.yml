@@ -11,7 +11,8 @@ services:
       POSTGRES_DB: cortex
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./packages/db/drizzle:/docker-entrypoint-initdb.d
+      - ./scripts/init-extensions.sql:/docker-entrypoint-initdb.d/0000_extensions.sql
+      - ./packages/db/drizzle/0001_initial.sql:/docker-entrypoint-initdb.d/0001_initial.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -23,12 +24,12 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
     ports:
-      - "3001:3001"
-      - "3002:3002"
+      - "4000:4000"
+      - "4001:4001"
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/cortex
-      API_PORT: "3001"
-      MCP_PORT: "3002"
+      API_PORT: "4000"
+      MCP_PORT: "4001"
       NODE_ENV: development
     depends_on:
       postgres:

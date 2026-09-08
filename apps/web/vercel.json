@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && bun install && cd apps/web && bun run build",
+  "installCommand": "echo 'install handled in buildCommand'",
+  "outputDirectory": ".next",
+  "env": {
+    "NEXT_PUBLIC_API_URL": "@cortex_api_url",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "@cortex_clerk_publishable_key"
+  }
+}

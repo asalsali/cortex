@@ -1,0 +1,25 @@
+app = "cortex-worker"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+
+# Workers do not serve HTTP -- they process jobs from the queue.
+# Use a minimal machine that scales to zero when idle.
+
+[checks]
+  [checks.alive]
+    type = "tcp"
+    port = 8080
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "15s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+  auto_stop_machines = "stop"
+  auto_start_machines = true

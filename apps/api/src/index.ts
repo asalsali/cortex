@@ -11,6 +11,8 @@ import { factsRoutes } from "./routes/facts";
 import { entityRoutes } from "./routes/entity";
 import { timelineRoutes } from "./routes/timeline";
 import { ingestRoutes } from "./routes/ingest";
+import { billingRoutes } from "./routes/billing";
+import { slackRoutes } from "./routes/slack";
 import { startMcpServer } from "./mcp/server";
 
 // ─── Database ────────────────────────────────────────────────────
@@ -62,11 +64,13 @@ app.route("/api/v1", factsRoutes);
 app.route("/api/v1", entityRoutes);
 app.route("/api/v1", timelineRoutes);
 app.route("/api/v1", ingestRoutes);
+app.route("/api/v1", billingRoutes);
+app.route("/api/v1", slackRoutes);
 
 // ─── Start servers ───────────────────────────────────────────────
 
-const API_PORT = Number(process.env.API_PORT) || 3001;
-const MCP_PORT = Number(process.env.MCP_PORT) || 3002;
+const API_PORT = Number(process.env.API_PORT) || 4000;
+const MCP_PORT = Number(process.env.MCP_PORT) || 4001;
 
 console.log(`Cortex API server starting on port ${API_PORT}`);
 console.log(`Cortex MCP server starting on port ${MCP_PORT}`);
