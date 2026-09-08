@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { getIntegrations } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
-import { integrations as mockIntegrations, formatDate } from "@/data/mock";
+import { formatDate } from "@/data/mock";
 import { SkeletonList } from "@/components/Skeleton";
 import Modal from "@/components/Modal";
 import styles from "./page.module.css";
@@ -72,7 +72,7 @@ const SETUP_INSTRUCTIONS: Record<string, string> = {
 export default function SourcesPage() {
   const { data: integrations, loading } = useApi(
     useCallback(() => getIntegrations(), []),
-    mockIntegrations,
+    [],
   );
   const [setupModal, setSetupModal] = useState<string | null>(null);
 

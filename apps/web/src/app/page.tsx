@@ -32,7 +32,7 @@ function getConfidenceClass(confidence: number): string {
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>(mockResults);
+  const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDemo, setIsDemo] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
@@ -40,7 +40,7 @@ export default function SearchPage() {
 
   const doSearch = useCallback(async (q: string) => {
     if (!q.trim()) {
-      setResults(mockResults);
+      setResults([]);
       setIsDemo(false);
       setHasSearched(false);
       return;
@@ -53,16 +53,29 @@ export default function SearchPage() {
       const data = await apiSearch(q);
       setResults(data);
       setIsDemo(false);
-    } catch {
-      // Fallback: filter mock results client-side
-      const lower = q.toLowerCase();
-      const filtered = mockResults.filter(
-        (r) =>
-          r.title.toLowerCase().includes(lower) ||
-          r.snippet.toLowerCase().includes(lower),
-      );
-      setResults(filtered.length > 0 ? filtered : mockResults);
-      setIsDemo(true);
+    } catch (err) {
+      // Check if it's a network error (API unreachable) vs API error
+      const isNetworkError =
+        err instanceof TypeError ||
+        (err instanceof Error &&
+          err.message.includes("fetch") &&
+          !err.message.includes("API error"));
+
+      if (isNetworkError) {
+        // Fallback: filter mock results client-side
+        const lower = q.toLowerCase();
+        const filtered = mockResults.filter(
+          (r) =>
+            r.title.toLowerCase().includes(lower) ||
+            r.snippet.toLowerCase().includes(lower),
+        );
+        setResults(filtered.length > 0 ? filtered : mockResults);
+        setIsDemo(true);
+      } else {
+        // API returned an error -- show empty results
+        setResults([]);
+        setIsDemo(false);
+      }
     } finally {
       setLoading(false);
     }
@@ -110,9 +123,13 @@ export default function SearchPage() {
         <SkeletonList count={4} lines={2} />
       ) : results.length === 0 ? (
         <div className={styles.emptyState}>
-          <div className={styles.emptyTitle}>No results found</div>
+          <div className={styles.emptyTitle}>
+            {hasSearched ? "No results found" : "Start searching"}
+          </div>
           <p className={styles.emptyText}>
-            Try a different query or connect more sources to expand your knowledge base.
+            {hasSearched
+              ? "Try a different query or connect more sources to expand your knowledge base."
+              : "Type a question above to search across all your company knowledge."}
           </p>
         </div>
       ) : (

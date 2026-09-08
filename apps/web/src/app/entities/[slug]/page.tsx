@@ -6,15 +6,10 @@ import { useParams } from "next/navigation";
 import { getEntity as apiGetEntity, getFacts as apiGetFacts } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 import {
-  getEntity as mockGetEntity,
-  getEntityFacts as mockGetEntityFacts,
-  entities as allEntities,
-  timelineEvents as mockTimeline,
   formatDate,
   getEntityTypeColor,
   getSourceIcon,
   getSourceLabel,
-  getVelocityColor,
 } from "@/data/mock";
 import type { SourceType, Fact } from "@/data/mock";
 import { SkeletonList } from "@/components/Skeleton";
@@ -48,26 +43,13 @@ export default function EntityPage() {
 
   const [addFactOpen, setAddFactOpen] = useState(false);
 
-  const mockEntity = mockGetEntity(slug);
-  const mockFacts = mockGetEntityFacts(slug);
-
   const {
     data: entityCard,
     loading: entityLoading,
     refetch: refetchEntity,
   } = useApi(
     useCallback(() => apiGetEntity(slug), [slug]),
-    mockEntity
-      ? {
-          slug: mockEntity.slug,
-          name: mockEntity.name,
-          type: mockEntity.type,
-          compiledTruth: mockEntity.compiledTruth,
-          currentFacts: [],
-          timeline: [],
-          relatedEntities: mockEntity.relatedEntities,
-        }
-      : null,
+    null,
     [slug],
   );
 
@@ -77,14 +59,13 @@ export default function EntityPage() {
     refetch: refetchFacts,
   } = useApi(
     useCallback(() => apiGetFacts(slug), [slug]),
-    mockFacts,
+    [],
     [slug],
   );
 
-  const entity = mockEntity; // for fallback display data
   const loading = entityLoading && factsLoading;
 
-  if (!entity && !entityCard) {
+  if (!loading && !entityCard) {
     return (
       <div className={styles.page}>
         <Link href="/entities" className={styles.backLink}>
@@ -98,22 +79,32 @@ export default function EntityPage() {
     );
   }
 
-  const displayName = entityCard?.name ?? entity?.name ?? slug;
-  const displayType = entityCard?.type ?? entity?.type ?? "system";
-  const displayTruth = entityCard?.compiledTruth ?? entity?.compiledTruth ?? "";
-  const displayRelated = entityCard?.relatedEntities ?? entity?.relatedEntities ?? [];
+  const displayName = entityCard?.name ?? slug;
+  const displayType = entityCard?.type ?? "system";
+  const displayTruth = entityCard?.compiledTruth ?? "";
+  const displayRelated = entityCard?.relatedEntities ?? [];
 
   const allFacts: Fact[] = facts ?? [];
   const currentFacts = allFacts.filter((f) => f.isCurrent);
   const supersededFacts = allFacts.filter((f) => !f.isCurrent);
 
-  const entityTimeline = mockTimeline
-    .filter((e) => e.entitySlug === slug)
+  // Build timeline from facts (both current and superseded)
+  const entityTimeline = allFacts
+    .map((f) => ({
+      id: f.id,
+      date: f.validFrom,
+      content: f.content,
+      sourceType: f.sourceType,
+      sourceAuthor: f.sourceAuthor,
+      supersedes: f.supersededBy,
+    }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  const relatedEntities = displayRelated
-    .map((s) => allEntities.find((e) => e.slug === s))
-    .filter(Boolean);
+  const relatedEntities = displayRelated.map((s) => ({
+    slug: s,
+    name: s.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    type: "system" as const,
+  }));
 
   const typeColor = getEntityTypeColor(displayType as "system" | "person" | "project" | "decision" | "concept");
 
@@ -147,12 +138,6 @@ export default function EntityPage() {
                 {allFacts.length} facts ({currentFacts.length} current,{" "}
                 {supersededFacts.length} superseded)
               </span>
-              {entity && <span>Updated {formatDate(entity.lastUpdated)}</span>}
-              {entity && (
-                <span style={{ color: getVelocityColor(entity.velocity) }}>
-                  {entity.velocity}
-                </span>
-              )}
             </div>
           </div>
 

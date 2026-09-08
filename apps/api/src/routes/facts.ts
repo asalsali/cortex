@@ -1,5 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
+import { eq, and, desc } from "drizzle-orm";
+import { schema } from "@cortex/db";
 import type { AppEnv } from "../index";
 
 const createFactSchema = z.object({
@@ -48,10 +50,30 @@ factsRoutes.get("/facts/:entitySlug", async (c) => {
   const entitySlug = c.req.param("entitySlug");
   const tenantId = c.get("tenantId");
   const factsEngine = c.get("facts");
+  const includeAll = c.req.query("include") === "all";
 
   const kind = c.req.query("kind");
   const since = c.req.query("since");
   const limit = c.req.query("limit");
+
+  if (includeAll) {
+    // Return all facts (current + superseded) for entity detail views
+    const db = c.get("db")!;
+
+    const conditions = [
+      eq(schema.facts.tenantId, tenantId),
+      eq(schema.facts.entitySlug, entitySlug),
+    ];
+
+    const allFacts = await db
+      .select()
+      .from(schema.facts)
+      .where(and(...conditions))
+      .orderBy(desc(schema.facts.validFrom))
+      .limit(limit ? parseInt(limit) : 100);
+
+    return c.json({ facts: allFacts, total: allFacts.length });
+  }
 
   const result = await factsEngine.recall(tenantId, {
     entitySlug,

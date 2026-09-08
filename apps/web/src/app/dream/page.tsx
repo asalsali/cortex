@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { getDreamRuns } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
-import { dreamRuns as mockDreamRuns, formatDate } from "@/data/mock";
+import { formatDate } from "@/data/mock";
 import { SkeletonList } from "@/components/Skeleton";
 import styles from "./page.module.css";
 
@@ -16,7 +16,7 @@ function parseDuration(dur: string): number {
 export default function DreamPage() {
   const { data: dreamRuns, loading } = useApi(
     useCallback(() => getDreamRuns(), []),
-    mockDreamRuns,
+    [],
   );
 
   if (loading) {

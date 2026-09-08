@@ -5,7 +5,6 @@ import { useState, useCallback } from "react";
 import { getTimeline as apiGetTimeline } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 import {
-  timelineEvents as mockTimeline,
   formatDate,
   getEntityTypeColor,
   getSourceIcon,
@@ -68,15 +67,7 @@ const KIND_FILTERS: { label: string; value: FactKind | "all" }[] = [
   { label: "Process", value: "process" },
 ];
 
-// Extract unique entities from mock data for entity filter
-const ENTITY_FILTERS = Array.from(
-  new Set(mockTimeline.map((e) => e.entitySlug)),
-)
-  .slice(0, 5)
-  .map((slug) => ({
-    label: mockTimeline.find((e) => e.entitySlug === slug)?.entityName ?? slug,
-    value: slug,
-  }));
+// Entity filters are computed dynamically from loaded data (see component body)
 
 export default function TimelinePage() {
   const [kindFilter, setKindFilter] = useState<FactKind | "all">("all");
@@ -97,9 +88,19 @@ export default function TimelinePage() {
         ),
       [entityFilter, kindFilter, dateFrom, dateTo],
     ),
-    mockTimeline,
+    [],
     [entityFilter, kindFilter, dateFrom, dateTo],
   );
+
+  // Compute entity filters from loaded data
+  const ENTITY_FILTERS = Array.from(
+    new Set((apiEvents ?? []).map((e) => e.entitySlug)),
+  )
+    .slice(0, 5)
+    .map((slug) => ({
+      label: (apiEvents ?? []).find((e) => e.entitySlug === slug)?.entityName ?? slug,
+      value: slug,
+    }));
 
   // Apply client-side filters to the data (covers both mock and real data)
   const filtered = (apiEvents ?? []).filter((event) => {

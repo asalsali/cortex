@@ -63,23 +63,25 @@ export function useApi<T>(
     } catch (err) {
       if (!mountedRef.current) return;
 
-      // Network error or API unreachable -- fall back to mock
+      // Network error (API unreachable) -- fall back to mock data
       const isNetworkError =
         err instanceof TypeError ||
-        (err instanceof Error && err.message.includes("fetch"));
+        (err instanceof Error &&
+          err.message.includes("fetch") &&
+          !err.message.includes("API error"));
 
       if (isNetworkError) {
         setData(fallback);
         setIsDemo(true);
         setDemoMode(true);
       } else {
-        // API returned an error response
+        // API returned an error response -- show error, use empty/null data
         setError(
           err instanceof Error ? err.message : "Unknown error",
         );
-        setData(fallback);
-        setIsDemo(true);
-        setDemoMode(true);
+        setData(null);
+        setIsDemo(false);
+        setDemoMode(false);
       }
     } finally {
       if (mountedRef.current) setLoading(false);

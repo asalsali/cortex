@@ -13,6 +13,8 @@ import { timelineRoutes } from "./routes/timeline";
 import { ingestRoutes } from "./routes/ingest";
 import { billingRoutes } from "./routes/billing";
 import { slackRoutes } from "./routes/slack";
+import { dreamRunsRoutes } from "./routes/dream-runs";
+import { integrationsRoutes } from "./routes/integrations";
 import { startMcpServer } from "./mcp/server";
 
 // ─── Database ────────────────────────────────────────────────────
@@ -75,6 +77,8 @@ app.route("/api/v1", timelineRoutes);
 app.route("/api/v1", ingestRoutes);
 app.route("/api/v1", billingRoutes);
 app.route("/api/v1", slackRoutes);
+app.route("/api/v1", dreamRunsRoutes);
+app.route("/api/v1", integrationsRoutes);
 
 // ─── Start servers ───────────────────────────────────────────────
 

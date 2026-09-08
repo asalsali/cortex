@@ -15,6 +15,9 @@ import type {
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
+const DEV_TENANT_ID =
+  process.env.NEXT_PUBLIC_DEV_TENANT_ID ?? "d327d2e5-7db4-42df-b567-b5433370d0fa";
+
 // ---------------------------------------------------------------------------
 // Types specific to API responses
 // ---------------------------------------------------------------------------
@@ -127,6 +130,11 @@ async function apiFetch<T>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
+  // In dev mode (no Clerk token), send the dev tenant ID
+  if (!token && DEV_TENANT_ID) {
+    headers["X-Tenant-Id"] = DEV_TENANT_ID;
+  }
+
   const url = `${BASE_URL}/api/v1${path}`;
 
   const res = await fetch(url, {
@@ -165,31 +173,138 @@ export async function search(
   query: string,
   mode?: "quick" | "standard" | "deep",
 ): Promise<SearchResult[]> {
-  const res = await apiFetch<{ results: SearchResult[] }>("/search", {
+  const res = await apiFetch<{
+    results: Array<{
+      id: string;
+      type: string;
+      title: string;
+      content: string;
+      score: number;
+      sourceType: SourceType | null;
+      sourceRef: string | null;
+      sourceAuthor: string | null;
+      validFrom: string | null;
+      entitySlug: string | null;
+      chunkSource?: string;
+    }>;
+    total: number;
+    modeUsed: string;
+    tokenCount: number;
+  }>("/search", {
     method: "POST",
     body: JSON.stringify({ query, mode }),
   });
-  return res.results;
+
+  // Map API response to UI SearchResult shape
+  return res.results.map((r) => ({
+    id: r.id,
+    title: r.title,
+    snippet: r.content,
+    entitySlug: r.entitySlug ?? "",
+    sourceType: (r.sourceType ?? "manual") as SourceType,
+    confidence: r.score,
+    date: r.validFrom ?? new Date().toISOString(),
+    isCurrent: true,
+    kind: "architecture" as FactKind,
+  }));
 }
 
 /** GET /api/v1/entities */
 export async function getEntities(): Promise<Entity[]> {
-  return apiFetch<Entity[]>("/entities");
+  const res = await apiFetch<Array<{
+    slug: string;
+    title: string;
+    type: string;
+    compiledTruth: string | null;
+    currentFactCount: number;
+    totalFactCount: number;
+    supersededCount: number;
+    lastUpdated: string | null;
+    neighborSlugs: string[];
+  }>>("/entities");
+
+  return res.map((e) => ({
+    slug: e.slug,
+    name: e.title,
+    type: (e.type === "entity" ? "system" : e.type) as Entity["type"],
+    compiledTruth: e.compiledTruth ?? "",
+    factCount: e.totalFactCount,
+    currentFactCount: e.currentFactCount,
+    supersededCount: e.supersededCount,
+    lastUpdated: e.lastUpdated ?? new Date().toISOString(),
+    relatedEntities: e.neighborSlugs,
+    velocity: "stable" as const,
+  }));
 }
 
 /** GET /api/v1/entities/:slug */
 export async function getEntity(slug: string): Promise<EntityCard> {
-  return apiFetch<EntityCard>(`/entities/${encodeURIComponent(slug)}`);
+  const res = await apiFetch<{
+    slug: string;
+    title: string;
+    compiledTruth: string | null;
+    currentFacts: Array<Record<string, unknown>>;
+    timeline: Array<Record<string, unknown>>;
+    graph: { neighbors: Array<{ slug: string; title: string; edgeType: string; direction: string }> };
+  }>(`/entities/${encodeURIComponent(slug)}`);
+
+  return {
+    slug: res.slug,
+    name: res.title,
+    type: "system",
+    compiledTruth: res.compiledTruth ?? "",
+    currentFacts: [],
+    timeline: [],
+    relatedEntities: res.graph.neighbors.map((n) => n.slug),
+  };
 }
 
 /** GET /api/v1/facts/:slug */
 export async function getFacts(entitySlug: string): Promise<Fact[]> {
-  return apiFetch<Fact[]>(`/facts/${encodeURIComponent(entitySlug)}`);
+  const res = await apiFetch<{
+    facts: Array<{
+      id: string;
+      tenantId: string;
+      entitySlug: string;
+      content: string;
+      kind: string;
+      confidence: number;
+      visibility: string;
+      validFrom: string;
+      validUntil: string | null;
+      sourceType: string | null;
+      sourceRef: string | null;
+      sourceAuthorId: string | null;
+      extractedBy: string;
+      supersededBy: string | null;
+      supersessionReason: string | null;
+      consolidatedInto: string | null;
+      consolidatedAt: string | null;
+      createdAt: string;
+    }>;
+    total: number;
+  }>(`/facts/${encodeURIComponent(entitySlug)}?include=all`);
+
+  return res.facts.map((f) => ({
+    id: f.id,
+    entitySlug: f.entitySlug,
+    content: f.content,
+    kind: (f.kind ?? "context") as FactKind,
+    confidence: f.confidence ?? 0.9,
+    validFrom: f.validFrom,
+    validUntil: f.validUntil,
+    sourceType: (f.sourceType ?? "manual") as SourceType,
+    sourceRef: f.sourceRef ?? "",
+    sourceAuthor: f.sourceAuthorId ?? "Unknown",
+    supersededBy: f.supersededBy,
+    supersessionReason: f.supersessionReason,
+    isCurrent: f.validUntil === null,
+  }));
 }
 
 /** POST /api/v1/facts */
-export async function createFact(data: CreateFactData): Promise<Fact> {
-  return apiFetch<Fact>("/facts", {
+export async function createFact(data: CreateFactData): Promise<{ factId: string; superseded: string[] }> {
+  return apiFetch<{ factId: string; superseded: string[] }>("/facts", {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -201,13 +316,48 @@ export async function getTimeline(
   filters?: { kind?: string; from?: string; to?: string },
 ): Promise<TimelineEvent[]> {
   const params = new URLSearchParams();
-  if (entitySlug) params.set("entity", entitySlug);
   if (filters?.kind) params.set("kind", filters.kind);
   if (filters?.from) params.set("from", filters.from);
   if (filters?.to) params.set("to", filters.to);
 
   const qs = params.toString();
-  return apiFetch<TimelineEvent[]>(`/timeline${qs ? `?${qs}` : ""}`);
+
+  // Use entity-specific endpoint if slug provided, otherwise global timeline
+  const path = entitySlug
+    ? `/timeline/${encodeURIComponent(entitySlug)}${qs ? `?${qs}` : ""}`
+    : `/timeline${qs ? `?${qs}` : ""}`;
+
+  const res = await apiFetch<{
+    events: Array<{
+      factId: string;
+      content: string;
+      kind: string;
+      validFrom: string;
+      validUntil: string | null;
+      sourceType: string | null;
+      sourceRef: string | null;
+      sourceAuthor: string | null;
+      supersededBy: string | null;
+      supersessionReason: string | null;
+      entitySlug?: string;
+      entityTitle?: string;
+      entityType?: string;
+    }>;
+    entitySlug?: string;
+  }>(path);
+
+  return res.events.map((e) => ({
+    id: e.factId,
+    date: e.validFrom,
+    entitySlug: e.entitySlug ?? entitySlug ?? "",
+    entityName: e.entityTitle ?? e.entitySlug ?? entitySlug ?? "",
+    entityType: (e.entityType ?? "system") as TimelineEvent["entityType"],
+    content: e.content,
+    sourceType: (e.sourceType ?? "manual") as SourceType,
+    sourceAuthor: e.sourceAuthor ?? "Unknown",
+    kind: (e.kind ?? "context") as FactKind,
+    supersedes: e.supersededBy,
+  }));
 }
 
 /** GET /api/v1/delta?since=... */
@@ -219,12 +369,94 @@ export async function getDelta(since: string): Promise<DeltaResponse> {
 
 /** GET /api/v1/dream-runs */
 export async function getDreamRuns(): Promise<DreamRun[]> {
-  return apiFetch<DreamRun[]>("/dream-runs");
+  const res = await apiFetch<Array<{
+    id: string;
+    startedAt: string;
+    completedAt: string | null;
+    status: string;
+    phases: Record<string, { startedAt: string; completedAt: string | null; itemsProcessed: number; errors: string[] }>;
+    summary: string | null;
+    factsCreated: number;
+    factsSuperseded: number;
+    edgesCreated: number;
+    pagesUpdated: number;
+    llmCostUsd: number;
+  }>>("/dream-runs");
+
+  return res.map((r) => {
+    const start = new Date(r.startedAt);
+    const end = r.completedAt ? new Date(r.completedAt) : start;
+    const durationMs = end.getTime() - start.getTime();
+    const mins = Math.floor(durationMs / 60000);
+    const secs = Math.floor((durationMs % 60000) / 1000);
+
+    const phaseNames = ["sync", "extract", "embed", "consolidate", "health"] as const;
+    const phases = phaseNames
+      .filter((name) => r.phases[name])
+      .map((name) => {
+        const p = r.phases[name];
+        const pStart = new Date(p.startedAt);
+        const pEnd = p.completedAt ? new Date(p.completedAt) : pStart;
+        const pMs = pEnd.getTime() - pStart.getTime();
+        const pM = Math.floor(pMs / 60000);
+        const pS = Math.floor((pMs % 60000) / 1000);
+        return {
+          name,
+          duration: `${pM}m ${String(pS).padStart(2, "0")}s`,
+          items: p.itemsProcessed,
+        };
+      });
+
+    return {
+      id: r.id,
+      startedAt: r.startedAt,
+      completedAt: r.completedAt ?? r.startedAt,
+      duration: `${mins}m ${String(secs).padStart(2, "0")}s`,
+      factsCreated: r.factsCreated,
+      factsSuperseded: r.factsSuperseded,
+      edgesCreated: r.edgesCreated,
+      entitiesUpdated: r.pagesUpdated,
+      phases,
+    };
+  });
 }
 
 /** GET /api/v1/integrations */
 export async function getIntegrations(): Promise<Integration[]> {
-  return apiFetch<Integration[]>("/integrations");
+  const res = await apiFetch<Array<{
+    id: string;
+    tenantId: string;
+    sourceType: string;
+    config: Record<string, unknown>;
+    status: string;
+    lastSyncAt: string | null;
+  }>>("/integrations");
+
+  return res.map((i) => ({
+    id: i.id,
+    name: sourceTypeName(i.sourceType),
+    sourceType: (i.sourceType ?? "manual") as SourceType,
+    status: mapIntegrationStatus(i.status),
+    lastSyncAt: i.lastSyncAt,
+    factCount: 0,
+    description: `Connected ${sourceTypeName(i.sourceType)} integration`,
+  }));
+}
+
+function sourceTypeName(st: string): string {
+  const names: Record<string, string> = {
+    slack: "Slack", notion: "Notion", git: "GitHub",
+    manual: "Manual Upload", meeting: "Meeting Notes",
+    agent: "Agent", google_docs: "Google Docs",
+  };
+  return names[st] ?? st;
+}
+
+function mapIntegrationStatus(s: string): Integration["status"] {
+  if (s === "active") return "connected";
+  if (s === "paused" || s === "disconnected") return "available";
+  if (s === "error") return "error";
+  return "available";
 }
 
 /** POST /api/v1/ingest */

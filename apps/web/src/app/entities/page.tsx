@@ -5,7 +5,6 @@ import { useState } from "react";
 import { getEntities } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 import {
-  entities as mockEntities,
   formatDate,
   getEntityTypeColor,
   getVelocityColor,
@@ -23,7 +22,7 @@ const FILTERS: { label: string; value: EntityType | "all" }[] = [
 ];
 
 export default function EntitiesPage() {
-  const { data: entities, loading } = useApi(getEntities, mockEntities);
+  const { data: entities, loading } = useApi(getEntities, []);
   const [filter, setFilter] = useState<EntityType | "all">("all");
 
   const filtered =
