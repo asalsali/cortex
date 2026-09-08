@@ -34,7 +34,7 @@ export default function IngestModal({ open, onClose }: IngestModalProps) {
 
   return (
     <Modal open={open} onClose={onClose} title="Add Knowledge">
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <div>
           <label style={labelStyle}>Title (optional)</label>
           <input
@@ -46,16 +46,16 @@ export default function IngestModal({ open, onClose }: IngestModalProps) {
           />
         </div>
         <div>
-          <label style={labelStyle}>Content (Markdown)</label>
+          <label style={labelStyle}>Content</label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Paste markdown, meeting notes, or any knowledge..."
             rows={10}
-            style={{ ...inputStyle, resize: "vertical", minHeight: 160 }}
+            style={{ ...inputStyle, resize: "vertical", minHeight: 160, lineHeight: 1.55 }}
           />
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
           <button onClick={onClose} style={cancelBtnStyle}>
             Cancel
           </button>
@@ -64,7 +64,7 @@ export default function IngestModal({ open, onClose }: IngestModalProps) {
             disabled={loading || !content.trim()}
             style={{
               ...submitBtnStyle,
-              opacity: loading || !content.trim() ? 0.5 : 1,
+              opacity: loading || !content.trim() ? 0.4 : 1,
             }}
           >
             {loading ? "Ingesting..." : "Add Knowledge"}
@@ -77,43 +77,45 @@ export default function IngestModal({ open, onClose }: IngestModalProps) {
 
 const labelStyle: React.CSSProperties = {
   display: "block",
-  fontSize: 12,
-  fontWeight: 550,
-  color: "#9ca3b4",
+  fontSize: 11,
+  fontWeight: 400,
+  color: "#6e6e76",
   marginBottom: 6,
   textTransform: "uppercase",
-  letterSpacing: "0.04em",
+  letterSpacing: "0.06em",
 };
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "10px 12px",
-  background: "#0f1117",
-  border: "1px solid #2a2d3e",
-  borderRadius: 8,
-  color: "#e8eaed",
+  background: "#09090b",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: 6,
+  color: "#ededef",
   fontSize: 14,
   outline: "none",
   fontFamily: "inherit",
 };
 
 const cancelBtnStyle: React.CSSProperties = {
-  padding: "8px 16px",
+  padding: "6px 14px",
   background: "transparent",
-  border: "1px solid #2a2d3e",
-  borderRadius: 8,
-  color: "#9ca3b4",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: 6,
+  color: "#6e6e76",
   fontSize: 13,
   cursor: "pointer",
+  transition: "all 0.1s ease",
 };
 
 const submitBtnStyle: React.CSSProperties = {
-  padding: "8px 20px",
-  background: "#7c5cfc",
+  padding: "6px 16px",
+  background: "#ededef",
   border: "none",
-  borderRadius: 8,
-  color: "white",
+  borderRadius: 6,
+  color: "#09090b",
   fontSize: 13,
-  fontWeight: 550,
+  fontWeight: 500,
   cursor: "pointer",
+  transition: "opacity 0.12s ease",
 };

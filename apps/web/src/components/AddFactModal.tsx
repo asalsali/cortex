@@ -58,32 +58,32 @@ export default function AddFactModal({
 
   return (
     <Modal open={open} onClose={onClose} title="Add Fact">
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <div>
           <label style={labelStyle}>Entity</label>
-          <div style={{ fontSize: 14, color: "#e8eaed", fontFamily: "var(--font-mono)" }}>
+          <div style={{ fontSize: 13, color: "#ededef", fontFamily: "var(--font-mono)" }}>
             {entitySlug}
           </div>
         </div>
         <div>
           <label style={labelStyle}>Kind</label>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
             {KINDS.map((k) => (
               <button
                 key={k}
                 onClick={() => setKind(k)}
                 style={{
-                  padding: "4px 12px",
-                  borderRadius: 16,
-                  border:
-                    k === kind
-                      ? "1px solid rgba(124,92,252,0.3)"
-                      : "1px solid #2a2d3e",
-                  background:
-                    k === kind ? "rgba(124,92,252,0.15)" : "transparent",
-                  color: k === kind ? "#7c5cfc" : "#9ca3b4",
+                  padding: "4px 10px",
+                  borderRadius: 4,
+                  border: k === kind
+                    ? "1px solid rgba(255,255,255,0.14)"
+                    : "1px solid rgba(255,255,255,0.03)",
+                  background: k === kind ? "rgba(255,255,255,0.05)" : "transparent",
+                  color: k === kind ? "#ededef" : "#6e6e76",
                   fontSize: 12,
                   cursor: "pointer",
+                  fontFamily: "var(--font-mono)",
+                  transition: "all 0.1s ease",
                 }}
               >
                 {k}
@@ -101,45 +101,28 @@ export default function AddFactModal({
             style={{
               width: "100%",
               padding: "10px 12px",
-              background: "#0f1117",
-              border: "1px solid #2a2d3e",
-              borderRadius: 8,
-              color: "#e8eaed",
+              background: "#09090b",
+              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: 6,
+              color: "#ededef",
               fontSize: 14,
               outline: "none",
               fontFamily: "inherit",
               resize: "vertical",
+              lineHeight: 1.55,
             }}
           />
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
-          <button
-            onClick={onClose}
-            style={{
-              padding: "8px 16px",
-              background: "transparent",
-              border: "1px solid #2a2d3e",
-              borderRadius: 8,
-              color: "#9ca3b4",
-              fontSize: 13,
-              cursor: "pointer",
-            }}
-          >
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+          <button onClick={onClose} style={cancelBtnStyle}>
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={loading || !content.trim()}
             style={{
-              padding: "8px 20px",
-              background: "#7c5cfc",
-              border: "none",
-              borderRadius: 8,
-              color: "white",
-              fontSize: 13,
-              fontWeight: 550,
-              cursor: "pointer",
-              opacity: loading || !content.trim() ? 0.5 : 1,
+              ...submitBtnStyle,
+              opacity: loading || !content.trim() ? 0.4 : 1,
             }}
           >
             {loading ? "Creating..." : "Add Fact"}
@@ -152,10 +135,33 @@ export default function AddFactModal({
 
 const labelStyle: React.CSSProperties = {
   display: "block",
-  fontSize: 12,
-  fontWeight: 550,
-  color: "#9ca3b4",
+  fontSize: 11,
+  fontWeight: 400,
+  color: "#6e6e76",
   marginBottom: 6,
   textTransform: "uppercase",
-  letterSpacing: "0.04em",
+  letterSpacing: "0.06em",
+};
+
+const cancelBtnStyle: React.CSSProperties = {
+  padding: "6px 14px",
+  background: "transparent",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: 6,
+  color: "#6e6e76",
+  fontSize: 13,
+  cursor: "pointer",
+  transition: "all 0.1s ease",
+};
+
+const submitBtnStyle: React.CSSProperties = {
+  padding: "6px 16px",
+  background: "#ededef",
+  border: "none",
+  borderRadius: 6,
+  color: "#09090b",
+  fontSize: 13,
+  fontWeight: 500,
+  cursor: "pointer",
+  transition: "opacity 0.12s ease",
 };

@@ -6,8 +6,6 @@ import { getEntities } from "@/lib/api";
 import { useApi } from "@/lib/use-api";
 import {
   formatDate,
-  getEntityTypeColor,
-  getVelocityColor,
 } from "@/data/mock";
 import type { EntityType } from "@/data/mock";
 import { SkeletonList } from "@/components/Skeleton";
@@ -35,7 +33,7 @@ export default function EntitiesPage() {
       <div className={styles.header}>
         <h1 className={styles.title}>Entities</h1>
         <span className={styles.count}>
-          {filtered ? `${filtered.length} entities` : "..."}
+          {filtered ? filtered.length : ""}
         </span>
       </div>
 
@@ -52,50 +50,44 @@ export default function EntitiesPage() {
       </div>
 
       {loading ? (
-        <SkeletonList count={6} lines={2} />
+        <SkeletonList count={6} lines={1} />
       ) : !filtered || filtered.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "60px 20px", color: "#6b7280" }}>
-          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "#9ca3b4" }}>
-            No entities found
-          </div>
-          <p>Connect a source or add knowledge to create entities.</p>
+        <div className={styles.emptyState}>
+          <p className={styles.emptyText}>
+            No entities found. Connect a source to create entities.
+          </p>
         </div>
       ) : (
-        <div className={styles.grid}>
-          {filtered.map((entity) => (
-            <Link
-              key={entity.slug}
-              href={`/entities/${entity.slug}`}
-              className={styles.card}
-            >
-              <div className={styles.cardHeader}>
-                <span className={styles.cardName}>{entity.name}</span>
-                <span
-                  className={styles.typeBadge}
-                  style={{
-                    background: `${getEntityTypeColor(entity.type)}18`,
-                    color: getEntityTypeColor(entity.type),
-                    border: `1px solid ${getEntityTypeColor(entity.type)}30`,
-                  }}
-                >
-                  {entity.type}
-                </span>
-              </div>
-              <p className={styles.cardTruth}>{entity.compiledTruth}</p>
-              <div className={styles.cardFooter}>
-                <span>{entity.currentFactCount} facts</span>
-                <span>{formatDate(entity.lastUpdated)}</span>
-                <span>
-                  <span
-                    className={styles.velocityDot}
-                    style={{ background: getVelocityColor(entity.velocity) }}
-                  />
-                  {entity.velocity}
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th className={styles.th}>Name</th>
+              <th className={styles.th}>Type</th>
+              <th className={styles.thRight}>Facts</th>
+              <th className={styles.thRight}>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((entity) => (
+              <tr key={entity.slug} className={styles.tr}>
+                <td className={styles.td}>
+                  <Link href={`/entities/${entity.slug}`} className={styles.entityLink}>
+                    {entity.name}
+                  </Link>
+                </td>
+                <td className={styles.td}>
+                  <span className={styles.typeLabel}>{entity.type}</span>
+                </td>
+                <td className={styles.tdRight}>
+                  <span className={styles.factCount}>{entity.currentFactCount}</span>
+                </td>
+                <td className={styles.tdRight}>
+                  <span className={styles.date}>{formatDate(entity.lastUpdated)}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

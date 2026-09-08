@@ -1,200 +1,245 @@
 .page {
-  max-width: 860px;
+  max-width: 720px;
 }
 
 .header {
-  margin-bottom: 24px;
+  margin-bottom: 40px;
 }
 
 .title {
   font-size: 24px;
   font-weight: 600;
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
+  letter-spacing: -0.03em;
+  margin-bottom: 4px;
 }
 
 .subtitle {
-  font-size: 14px;
-  color: var(--text-tertiary);
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 300;
 }
 
 /* Filters */
 .filterBar {
   display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
+  gap: 2px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
   align-items: center;
 }
 
 .filterBtn {
-  padding: 5px 12px;
+  padding: 4px 10px;
   font-size: 12px;
-  font-weight: 500;
-  border-radius: 20px;
-  border: 1px solid var(--border-primary);
+  font-weight: 400;
+  border-radius: var(--radius-sm);
+  border: none;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.1s ease;
 }
 
 .filterBtn:hover {
-  border-color: var(--accent-primary);
   color: var(--text-primary);
 }
 
 .filterBtnActive {
   composes: filterBtn;
-  background: var(--accent-muted);
-  border-color: var(--accent-border);
-  color: var(--accent-primary);
+  color: var(--text-primary);
+  font-weight: 500;
 }
 
 .filterSep {
   width: 1px;
-  height: 20px;
+  height: 14px;
   background: var(--border-primary);
-  margin: 0 4px;
+  margin: 0 8px;
 }
 
-/* Timeline */
+/* Date range */
+.dateRange {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 40px;
+  align-items: center;
+}
+
+.dateLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dateInput {
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  outline: none;
+  color-scheme: dark;
+  transition: border-color 0.12s ease;
+}
+
+.dateInput:focus {
+  border-color: var(--border-focus);
+}
+
+.dateClear {
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+
+.dateClear:hover {
+  color: var(--text-primary);
+}
+
+/* Timeline — the showcase */
 .timeline {
-  position: relative;
-  padding-left: 32px;
-}
-
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 7px;
-  top: 4px;
-  bottom: 4px;
-  width: 1px;
-  background: var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .monthGroup {
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .monthLabel {
   font-size: 11px;
   font-weight: 600;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  margin-top: 20px;
-  padding: 2px 0;
-  font-family: var(--font-mono);
-  position: relative;
+  margin-bottom: 20px;
+  margin-top: 48px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-primary);
 }
 
-.monthLabel::before {
-  content: "";
-  position: absolute;
-  left: -32px;
-  top: 50%;
-  width: 15px;
-  height: 1px;
-  background: var(--border-primary);
+.monthGroup:first-child .monthLabel {
+  margin-top: 0;
+}
+
+.monthEvents {
+  display: flex;
+  flex-direction: column;
 }
 
 .event {
-  position: relative;
-  padding: 12px 16px;
-  margin-bottom: 4px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-secondary);
-  border-radius: var(--radius-md);
-  transition: all 0.15s ease;
-  text-decoration: none;
-  display: block;
-  color: inherit;
+  display: flex;
+  gap: 24px;
 }
 
-.event:hover {
-  border-color: var(--border-primary);
-  background: var(--bg-tertiary);
+.eventTrack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 1px;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .eventDot {
-  position: absolute;
-  left: -32px;
-  top: 18px;
-  width: 9px;
-  height: 9px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  border: 2px solid var(--bg-primary);
+  background: var(--text-muted);
+  flex-shrink: 0;
+  margin-top: 5px;
+  position: relative;
+  z-index: 1;
+  transition: background 0.15s ease;
 }
 
-.eventTop {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 4px;
+.eventDot[data-current="true"] {
+  background: var(--status-current);
+  box-shadow: 0 0 0 3px rgba(63, 207, 107, 0.12);
+}
+
+.eventLine {
+  width: 1px;
+  flex: 1;
+  background: var(--border-primary);
+  min-height: 16px;
+}
+
+.eventBody {
+  padding-bottom: 28px;
+  flex: 1;
+  min-width: 0;
 }
 
 .eventDate {
   font-size: 11px;
-  font-family: var(--font-mono);
   color: var(--text-muted);
-  flex-shrink: 0;
-  width: 80px;
+  margin-bottom: 3px;
+  font-family: var(--font-mono);
 }
 
 .eventEntity {
-  font-size: 12px;
-  font-weight: 550;
-  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 3px;
+  letter-spacing: -0.005em;
 }
 
-.eventEntityType {
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  font-weight: 600;
+.eventEntity:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--text-muted);
 }
 
 .eventContent {
-  font-size: 13px;
-  color: var(--text-primary);
-  line-height: 1.5;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.55;
   margin-bottom: 6px;
 }
 
 .eventMeta {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 11px;
   color: var(--text-muted);
   font-family: var(--font-mono);
 }
 
-.kindTag {
-  padding: 1px 6px;
-  background: var(--bg-elevated);
-  border-radius: var(--radius-sm);
-  font-size: 10px;
+.metaSep {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.4;
 }
 
 .supersedes {
   color: var(--status-volatile);
   font-size: 11px;
+  font-style: italic;
 }
 
-.sourceIcon {
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: 700;
-  font-family: var(--font-mono);
+/* Empty */
+.emptyState {
+  padding: 60px 0;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 300;
 }

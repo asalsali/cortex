@@ -25,7 +25,7 @@ export default function DreamPage() {
         <div className={styles.header}>
           <h1 className={styles.title}>Dream Cycle</h1>
           <p className={styles.subtitle}>
-            Overnight consolidation runs that keep the knowledge base coherent
+            Overnight consolidation that keeps your knowledge base coherent
           </p>
         </div>
         <SkeletonList count={3} />
@@ -39,29 +39,12 @@ export default function DreamPage() {
         <div className={styles.header}>
           <h1 className={styles.title}>Dream Cycle</h1>
           <p className={styles.subtitle}>
-            Overnight consolidation runs that keep the knowledge base coherent
+            Overnight consolidation that keeps your knowledge base coherent
           </p>
         </div>
-        <div
-          style={{
-            textAlign: "center",
-            padding: "60px 20px",
-            color: "#6b7280",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 16,
-              fontWeight: 600,
-              marginBottom: 8,
-              color: "#9ca3b4",
-            }}
-          >
-            No dream cycles yet
-          </div>
-          <p>
-            The dream cycle runs overnight to consolidate knowledge. Connect
-            sources and the first cycle will run automatically.
+        <div className={styles.emptyState}>
+          <p className={styles.emptyText}>
+            No dream cycles yet. Connect sources and the first cycle will run automatically.
           </p>
         </div>
       </div>
@@ -80,7 +63,7 @@ export default function DreamPage() {
       <div className={styles.header}>
         <h1 className={styles.title}>Dream Cycle</h1>
         <p className={styles.subtitle}>
-          Overnight consolidation runs that keep the knowledge base coherent
+          Overnight consolidation that keeps your knowledge base coherent
         </p>
       </div>
 
@@ -90,36 +73,30 @@ export default function DreamPage() {
         <div className={styles.latestStats}>
           <div className={styles.stat}>
             <div className={styles.statValue}>{latest.factsCreated}</div>
-            <div className={styles.statLabel}>Facts Created</div>
+            <div className={styles.statLabel}>created</div>
           </div>
           <div className={styles.stat}>
             <div className={styles.statValue}>{latest.factsSuperseded}</div>
-            <div className={styles.statLabel}>Superseded</div>
+            <div className={styles.statLabel}>superseded</div>
           </div>
           <div className={styles.stat}>
             <div className={styles.statValue}>{latest.edgesCreated}</div>
-            <div className={styles.statLabel}>Edges Created</div>
+            <div className={styles.statLabel}>edges</div>
           </div>
           <div className={styles.stat}>
             <div className={styles.statValue}>{latest.entitiesUpdated}</div>
-            <div className={styles.statLabel}>Entities Updated</div>
+            <div className={styles.statLabel}>entities</div>
           </div>
         </div>
         <div className={styles.latestMeta}>
-          <span>Started: {formatDate(latest.startedAt)}</span>
-          <span>Duration: {latest.duration}</span>
-          <span>
-            Completed:{" "}
-            {new Date(latest.completedAt).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </span>
+          <span>{formatDate(latest.startedAt)}</span>
+          <span className={styles.metaSep} />
+          <span>{latest.duration}</span>
         </div>
       </div>
 
       {/* Phase Breakdown */}
-      <div className={styles.sectionTitle}>Phase Breakdown</div>
+      <div className={styles.sectionTitle}>Phases</div>
       <div className={styles.phases}>
         {latest.phases.map((phase) => {
           const secs = parseDuration(phase.duration);
@@ -135,7 +112,7 @@ export default function DreamPage() {
                 />
               </div>
               <span className={styles.phaseDuration}>{phase.duration}</span>
-              <span className={styles.phaseItems}>{phase.items} items</span>
+              <span className={styles.phaseItems}>{phase.items}</span>
             </div>
           );
         })}
@@ -153,21 +130,20 @@ export default function DreamPage() {
                 </span>
                 <div className={styles.historyStats}>
                   <span>
-                    <span className={styles.historyStatHighlight}>
+                    <span className={styles.historyStatGreen}>
                       +{run.factsCreated}
                     </span>{" "}
                     facts
                   </span>
                   {run.factsSuperseded > 0 && (
                     <span>
-                      <span className={styles.historyStatWarn}>
+                      <span className={styles.historyStatAmber}>
                         -{run.factsSuperseded}
                       </span>{" "}
                       superseded
                     </span>
                   )}
                   <span>{run.edgesCreated} edges</span>
-                  <span>{run.entitiesUpdated} entities</span>
                 </div>
                 <span className={styles.historyDuration}>{run.duration}</span>
               </div>

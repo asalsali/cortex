@@ -39,7 +39,6 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  // Auto-dismiss after 3s
   useEffect(() => {
     if (items.length === 0) return;
     const timer = setTimeout(() => {
@@ -59,10 +58,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               ...toastStyle,
               borderLeftColor:
                 item.type === "success"
-                  ? "#34d399"
+                  ? "var(--status-current, #3fcf6b)"
                   : item.type === "error"
-                    ? "#ef4444"
-                    : "#60a5fa",
+                    ? "var(--status-error, #e5564e)"
+                    : "var(--status-active, #5b9cf5)",
             }}
           >
             {item.message}
@@ -74,29 +73,29 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 }
 
 // ---------------------------------------------------------------------------
-// Styles (inline to avoid extra CSS modules)
+// Styles
 // ---------------------------------------------------------------------------
 
 const containerStyle: React.CSSProperties = {
   position: "fixed",
-  bottom: 24,
-  right: 24,
+  bottom: 20,
+  right: 20,
   display: "flex",
   flexDirection: "column",
-  gap: 8,
+  gap: 6,
   zIndex: 9999,
   pointerEvents: "none",
 };
 
 const toastStyle: React.CSSProperties = {
-  padding: "12px 20px",
-  background: "#222539",
-  border: "1px solid #2a2d3e",
-  borderLeft: "3px solid #34d399",
-  borderRadius: 8,
-  color: "#e8eaed",
+  padding: "10px 16px",
+  background: "#111113",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderLeft: "2px solid #3fcf6b",
+  borderRadius: 6,
+  color: "#ededef",
   fontSize: 13,
-  boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.55)",
   pointerEvents: "auto",
-  animation: "slideIn 0.2s ease-out",
+  animation: "slideIn 0.15s ease-out",
 };

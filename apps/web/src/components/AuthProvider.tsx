@@ -8,7 +8,6 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
-    // Dev mode -- no auth
     return <>{children}</>;
   }
 
@@ -16,8 +15,8 @@ export default function AuthProvider({
     <ClerkProvider
       appearance={{
         variables: {
-          colorPrimary: "#7c5cfc",
-          colorBackground: "#161921",
+          colorPrimary: "#fafafa",
+          colorBackground: "#0f0f11",
         },
       }}
     >

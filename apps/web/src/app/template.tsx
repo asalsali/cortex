@@ -21,7 +21,7 @@ export default function AppTemplate({
     return <>{children}</>;
   }
 
-  // All other pages get the sidebar + topbar
+  // All other pages get the sidebar + minimal topbar
   return (
     <div className={styles.wrapper}>
       <Sidebar />
@@ -30,11 +30,13 @@ export default function AppTemplate({
           <div className={styles.breadcrumb}>
             <span>Cortex</span>
             <span className={styles.breadcrumbSep}>/</span>
-            <span className={styles.breadcrumbCurrent}>Knowledge Base</span>
+            <span className={styles.breadcrumbCurrent}>
+              {getPageLabel(pathname)}
+            </span>
           </div>
           <div className={styles.topbarRight}>
             <div className={styles.statusDot} />
-            <span className={styles.statusLabel}>Last sync 2h ago</span>
+            <span className={styles.statusLabel}>synced</span>
           </div>
         </header>
         <main className={styles.content}>
@@ -44,4 +46,15 @@ export default function AppTemplate({
       </div>
     </div>
   );
+}
+
+function getPageLabel(pathname: string): string {
+  if (pathname === "/") return "Search";
+  if (pathname.startsWith("/entities/")) return "Entity";
+  if (pathname.startsWith("/entities")) return "Entities";
+  if (pathname.startsWith("/timeline")) return "Timeline";
+  if (pathname.startsWith("/sources")) return "Sources";
+  if (pathname.startsWith("/dream")) return "Dream Cycle";
+  if (pathname.startsWith("/settings")) return "Settings";
+  return "Knowledge Base";
 }

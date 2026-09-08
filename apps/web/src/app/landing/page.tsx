@@ -1,30 +1,24 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 
-const features = [
+const sections = [
   {
-    icon: "|",
-    title: "Temporal Knowledge",
+    number: "01",
+    title: "Temporal knowledge",
     description:
       "Every fact has a timeline. See how decisions evolved, what was superseded, and why. Never lose the context behind a change.",
   },
   {
-    icon: "A",
-    title: "Agent-Ready",
+    number: "02",
+    title: "Agent-ready from day one",
     description:
-      "MCP server and REST API let AI agents read and write to your knowledge base. Claude Code, Cursor, and Codex become company-aware.",
+      "MCP server and REST API let AI agents read and write to your knowledge base. Claude, Cursor, and Codex become company-aware.",
   },
   {
-    icon: "#",
-    title: "Ambient Ingestion",
+    number: "03",
+    title: "Ambient ingestion",
     description:
-      "Connect Slack, Notion, GitHub, and more. Knowledge flows in from where your team already works. No wiki maintenance required.",
-  },
-  {
-    icon: "D",
-    title: "Dream Cycle",
-    description:
-      "Every night, Cortex consolidates new knowledge, detects contradictions, and builds entity cards. Wake up to a coherent picture.",
+      "Connect Slack, Notion, GitHub, and more. Knowledge flows in from where your team already works. No wiki maintenance.",
   },
 ];
 
@@ -32,14 +26,12 @@ const pricing = [
   {
     name: "Free",
     price: "$0",
-    period: "forever",
-    description: "For small teams getting started",
+    period: "",
     features: [
-      "Up to 5 users",
-      "2 source integrations",
+      "5 users",
+      "2 integrations",
       "Weekly dream cycle",
-      "Quick search mode",
-      "Manual uploads",
+      "Quick search",
     ],
     cta: "Get Started",
     highlighted: false,
@@ -48,14 +40,12 @@ const pricing = [
     name: "Team",
     price: "$12",
     period: "/user/mo",
-    description: "For growing engineering teams",
     features: [
-      "Up to 50 users",
+      "50 users",
       "Unlimited sources",
       "Nightly dream cycle",
-      "Standard search mode",
       "MCP server access",
-      "API key management",
+      "API keys",
       "Supersession tracking",
     ],
     cta: "Start Free Trial",
@@ -65,16 +55,13 @@ const pricing = [
     name: "Business",
     price: "$25",
     period: "/user/mo",
-    description: "For scaling companies",
     features: [
       "Unlimited users",
       "Custom connectors",
-      "On-demand dream cycles",
-      "Deep search with reranker",
-      "Priority support",
+      "On-demand cycles",
+      "Deep search + reranker",
       "SSO / SAML",
-      "Advanced analytics",
-      "Custom retention policies",
+      "Priority support",
     ],
     cta: "Contact Sales",
     highlighted: false,
@@ -86,10 +73,7 @@ export default function LandingPage() {
     <div className={styles.landing}>
       {/* Nav */}
       <nav className={styles.nav}>
-        <div className={styles.navLogo}>
-          <div className={styles.logoIcon}>C</div>
-          <span className={styles.logoText}>Cortex</span>
-        </div>
+        <span className={styles.navBrand}>Cortex</span>
         <div className={styles.navLinks}>
           <Link href="/sign-in" className={styles.navLink}>
             Sign In
@@ -102,132 +86,105 @@ export default function LandingPage() {
 
       {/* Hero */}
       <section className={styles.hero}>
-        <div className={styles.heroBadge}>Knowledge infrastructure for teams</div>
         <h1 className={styles.heroTitle}>
-          The company brain that remembers
-          <br />
-          <span className={styles.heroAccent}>how you got here</span>
+          Your company<br />brain.
         </h1>
         <p className={styles.heroSubtitle}>
-          Cortex builds a living knowledge graph from your existing tools.
+          A living knowledge graph built from your existing tools.
           Every fact has a timeline. Every decision is traceable.
-          Your AI agents and your team share the same source of truth.
         </p>
         <div className={styles.heroActions}>
           <Link href="/sign-up" className={styles.heroPrimary}>
-            Get Started Free
+            Get Started
           </Link>
-          <Link href="#features" className={styles.heroSecondary}>
-            See How It Works
-          </Link>
+          <span className={styles.heroNote}>Free for small teams</span>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className={styles.features}>
-        <div className={styles.featuresGrid}>
-          {features.map((feature) => (
-            <div key={feature.title} className={styles.featureCard}>
-              <div className={styles.featureIcon}>{feature.icon}</div>
-              <h3 className={styles.featureTitle}>{feature.title}</h3>
-              <p className={styles.featureDesc}>{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Divider */}
+      <div className={styles.divider} />
 
-      {/* How it works */}
-      <section className={styles.howSection}>
-        <h2 className={styles.sectionTitle}>
-          Your tools feed the brain. The brain feeds your team.
-        </h2>
-        <div className={styles.howSteps}>
-          <div className={styles.howStep}>
-            <div className={styles.howStepNum}>1</div>
-            <h4>Connect your sources</h4>
-            <p>Slack channels, Notion pages, GitHub repos, meeting transcripts. Knowledge flows in automatically.</p>
+      {/* Sections — stacked, not cards */}
+      <section className={styles.sectionsWrap}>
+        {sections.map((section, i) => (
+          <div key={i} className={styles.sectionBlock}>
+            <span className={styles.sectionNumber}>{section.number}</span>
+            <h2 className={styles.sectionHeading}>{section.title}</h2>
+            <p className={styles.sectionText}>{section.description}</p>
           </div>
-          <div className={styles.howArrow}>&rarr;</div>
-          <div className={styles.howStep}>
-            <div className={styles.howStepNum}>2</div>
-            <h4>Cortex extracts and links</h4>
-            <p>Facts are extracted, entities identified, relationships mapped. Every fact traces back to its source.</p>
-          </div>
-          <div className={styles.howArrow}>&rarr;</div>
-          <div className={styles.howStep}>
-            <div className={styles.howStepNum}>3</div>
-            <h4>The dream cycle consolidates</h4>
-            <p>Overnight, Cortex detects contradictions, supersedes stale facts, and builds coherent entity cards.</p>
-          </div>
-        </div>
+        ))}
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className={styles.pricingSection}>
-        <h2 className={styles.sectionTitle}>Simple, transparent pricing</h2>
-        <p className={styles.sectionSubtitle}>
-          Start free. Scale when your knowledge base grows.
+      <section className={styles.pricingSection}>
+        <h2 className={styles.pricingSectionTitle}>Pricing</h2>
+        <p className={styles.pricingSectionSub}>
+          Start free. Scale when you need to.
         </p>
-        <div className={styles.pricingGrid}>
-          {pricing.map((plan) => (
-            <div
-              key={plan.name}
-              className={
-                plan.highlighted
-                  ? styles.pricingCardHighlighted
-                  : styles.pricingCard
-              }
-            >
-              <div className={styles.pricingName}>{plan.name}</div>
-              <div className={styles.pricingPrice}>
-                {plan.price}
-                <span className={styles.pricingPeriod}>{plan.period}</span>
+        <div className={styles.pricingTable}>
+          <div className={styles.pricingHeader}>
+            <div className={styles.pricingHeaderCell} />
+            {pricing.map((plan) => (
+              <div key={plan.name} className={styles.pricingHeaderCell}>
+                <div className={styles.pricingPlanName}>{plan.name}</div>
+                <div className={styles.pricingPrice}>
+                  {plan.price}
+                  {plan.period && (
+                    <span className={styles.pricingPeriod}>{plan.period}</span>
+                  )}
+                </div>
               </div>
-              <p className={styles.pricingDesc}>{plan.description}</p>
-              <ul className={styles.pricingFeatures}>
-                {plan.features.map((f) => (
-                  <li key={f}>{f}</li>
-                ))}
-              </ul>
-              <Link
-                href="/sign-up"
-                className={
-                  plan.highlighted
-                    ? styles.pricingCtaHighlighted
-                    : styles.pricingCta
-                }
-              >
-                {plan.cta}
-              </Link>
-            </div>
-          ))}
+            ))}
+          </div>
+          {/* Feature rows */}
+          {["Users", "Integrations", "Dream Cycle", "Search", "API Access", "Support"].map(
+            (feature, fi) => {
+              const values = [
+                ["5", "50", "Unlimited"],
+                ["2", "Unlimited", "Custom"],
+                ["Weekly", "Nightly", "On-demand"],
+                ["Quick", "Standard", "Deep + reranker"],
+                ["\u2014", "MCP + REST", "MCP + REST"],
+                ["Community", "Email", "Priority"],
+              ];
+              return (
+                <div key={feature} className={styles.pricingRow}>
+                  <div className={styles.pricingFeatureLabel}>{feature}</div>
+                  {values[fi].map((val, vi) => (
+                    <div key={vi} className={styles.pricingCell}>
+                      {val}
+                    </div>
+                  ))}
+                </div>
+              );
+            },
+          )}
+          <div className={styles.pricingActions}>
+            <div className={styles.pricingActionCell} />
+            {pricing.map((plan) => (
+              <div key={plan.name} className={styles.pricingActionCell}>
+                <Link
+                  href="/sign-up"
+                  className={
+                    plan.highlighted
+                      ? styles.pricingCtaHighlighted
+                      : styles.pricingCtaDefault
+                  }
+                >
+                  {plan.cta}
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
-      </section>
-
-      {/* Footer CTA */}
-      <section className={styles.footerCta}>
-        <h2 className={styles.footerCtaTitle}>
-          Stop losing institutional knowledge
-        </h2>
-        <p className={styles.footerCtaText}>
-          Set up in 5 minutes. Connect Slack. Let the brain start learning.
-        </p>
-        <Link href="/sign-up" className={styles.heroPrimary}>
-          Get Started Free
-        </Link>
       </section>
 
       {/* Footer */}
       <footer className={styles.footer}>
-        <div className={styles.footerInner}>
-          <div className={styles.footerBrand}>
-            <div className={styles.logoIcon}>C</div>
-            <span className={styles.logoText}>Cortex</span>
-          </div>
-          <div className={styles.footerCopy}>
-            The company brain that remembers how you got here.
-          </div>
-        </div>
+        <span className={styles.footerBrand}>Cortex</span>
+        <span className={styles.footerCopy}>
+          The company brain that remembers how you got here.
+        </span>
       </footer>
     </div>
   );

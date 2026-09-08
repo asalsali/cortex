@@ -44,54 +44,53 @@ export default function Modal({ open, onClose, title, children }: ModalProps) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Inline styles
-// ---------------------------------------------------------------------------
-
 const overlayStyle: React.CSSProperties = {
   position: "fixed",
   inset: 0,
-  background: "rgba(0,0,0,0.6)",
+  background: "rgba(0,0,0,0.75)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   zIndex: 1000,
+  animation: "fadeIn 0.12s ease-out",
 };
 
 const dialogStyle: React.CSSProperties = {
-  background: "#161921",
-  border: "1px solid #2a2d3e",
-  borderRadius: 12,
+  background: "#0c0c0e",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: 8,
   width: "100%",
-  maxWidth: 520,
+  maxWidth: 460,
   maxHeight: "80vh",
   overflow: "auto",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.6)",
+  boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
 };
 
 const headerStyle: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
-  padding: "16px 20px",
-  borderBottom: "1px solid #2a2d3e",
+  padding: "14px 20px",
+  borderBottom: "1px solid rgba(255,255,255,0.03)",
 };
 
 const titleStyle: React.CSSProperties = {
-  fontSize: 16,
-  fontWeight: 600,
-  color: "#e8eaed",
+  fontSize: 14,
+  fontWeight: 500,
+  color: "#ededef",
   margin: 0,
+  letterSpacing: "-0.01em",
 };
 
 const closeStyle: React.CSSProperties = {
   background: "none",
   border: "none",
-  color: "#6b7280",
-  fontSize: 22,
+  color: "#45454d",
+  fontSize: 18,
   cursor: "pointer",
   lineHeight: 1,
   padding: "0 4px",
+  transition: "color 0.1s ease",
 };
 
 const bodyStyle: React.CSSProperties = {

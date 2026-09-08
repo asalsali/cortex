@@ -1,46 +1,44 @@
 .page {
-  max-width: 860px;
+  max-width: 720px;
 }
 
 .header {
-  margin-bottom: 28px;
+  margin-bottom: 40px;
 }
 
 .title {
   font-size: 24px;
   font-weight: 600;
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
+  letter-spacing: -0.03em;
+  margin-bottom: 4px;
 }
 
 .subtitle {
-  font-size: 14px;
-  color: var(--text-tertiary);
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 300;
 }
 
 /* Latest Run */
 .latestRun {
-  padding: 24px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--accent-border);
-  border-radius: var(--radius-lg);
-  margin-bottom: 28px;
-  border-left: 3px solid var(--accent-primary);
+  margin-bottom: 48px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .latestLabel {
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--accent-primary);
-  margin-bottom: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 20px;
 }
 
 .latestStats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 0;
   margin-bottom: 20px;
 }
 
@@ -51,92 +49,95 @@
 }
 
 .statValue {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
   font-family: var(--font-mono);
   color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .statLabel {
   font-size: 11px;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-weight: 300;
 }
 
 .latestMeta {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
-  color: var(--text-tertiary);
+  color: var(--text-muted);
   font-family: var(--font-mono);
-  padding-top: 14px;
-  border-top: 1px solid var(--border-secondary);
+}
+
+.metaSep {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.4;
 }
 
 /* Phases */
 .sectionTitle {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-tertiary);
-  margin-bottom: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 14px;
 }
 
 .phases {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 28px;
+  gap: 8px;
+  margin-bottom: 48px;
 }
 
 .phaseRow {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-secondary);
-  border-radius: var(--radius-md);
 }
 
 .phaseName {
   font-size: 13px;
-  font-weight: 550;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   width: 100px;
-  font-family: var(--font-mono);
+  flex-shrink: 0;
 }
 
 .phaseBar {
   flex: 1;
-  height: 6px;
+  height: 2px;
   background: var(--bg-elevated);
-  border-radius: 3px;
+  border-radius: 1px;
   overflow: hidden;
 }
 
 .phaseBarFill {
   height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-  transition: width 0.3s ease;
+  border-radius: 1px;
+  background: var(--text-muted);
+  transition: width 0.4s ease;
 }
 
 .phaseDuration {
   font-size: 11px;
   color: var(--text-muted);
   font-family: var(--font-mono);
-  width: 60px;
+  width: 56px;
   text-align: right;
 }
 
 .phaseItems {
   font-size: 11px;
-  color: var(--text-tertiary);
+  color: var(--text-muted);
   font-family: var(--font-mono);
-  width: 50px;
+  width: 32px;
   text-align: right;
 }
 
@@ -144,30 +145,22 @@
 .history {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
 .historyRow {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 14px 16px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-secondary);
-  border-radius: var(--radius-md);
-  transition: background 0.15s ease;
-}
-
-.historyRow:hover {
-  background: var(--bg-tertiary);
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-secondary);
 }
 
 .historyDate {
   font-size: 12px;
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
-  width: 140px;
+  color: var(--text-tertiary);
+  width: 120px;
   flex-shrink: 0;
+  font-family: var(--font-mono);
 }
 
 .historyStats {
@@ -175,15 +168,14 @@
   gap: 16px;
   flex: 1;
   font-size: 12px;
-  color: var(--text-tertiary);
-  font-family: var(--font-mono);
+  color: var(--text-muted);
 }
 
-.historyStatHighlight {
+.historyStatGreen {
   color: var(--status-current);
 }
 
-.historyStatWarn {
+.historyStatAmber {
   color: var(--status-volatile);
 }
 
@@ -192,8 +184,19 @@
   color: var(--text-muted);
   font-family: var(--font-mono);
   text-align: right;
-  width: 80px;
+  width: 72px;
   flex-shrink: 0;
+}
+
+/* Empty */
+.emptyState {
+  padding: 60px 0;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 300;
 }
 
 /* ─── Responsive ───────────────────────── */
@@ -201,28 +204,17 @@
 @media (max-width: 600px) {
   .latestStats {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .latestMeta {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .phaseRow {
-    flex-wrap: wrap;
+    gap: 20px;
   }
 
   .historyRow {
     flex-direction: column;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 4px;
   }
 
-  .historyDate {
-    width: auto;
-  }
-
+  .historyDate,
   .historyDuration {
     width: auto;
-    text-align: left;
   }
 }

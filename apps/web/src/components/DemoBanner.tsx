@@ -9,22 +9,26 @@ export default function DemoBanner() {
   return (
     <div
       style={{
-        background: "rgba(251,191,36,0.1)",
-        border: "1px solid rgba(251,191,36,0.25)",
-        borderRadius: 8,
-        padding: "10px 16px",
-        marginBottom: 20,
-        fontSize: 13,
-        color: "#fbbf24",
+        padding: "6px 0",
+        marginBottom: 24,
+        fontSize: 12,
+        color: "#6e6e76",
         display: "flex",
         alignItems: "center",
-        gap: 10,
+        gap: 8,
+        fontFamily: "var(--font-mono)",
       }}
     >
-      <span style={{ fontWeight: 600 }}>Demo mode</span>
-      <span style={{ color: "#9ca3b4" }}>
-        Connect to API for live data. Showing sample data from Meridian.
-      </span>
+      <span
+        style={{
+          width: 5,
+          height: 5,
+          borderRadius: "50%",
+          background: "#e5a94e",
+          flexShrink: 0,
+        }}
+      />
+      <span>Demo mode -- connect to API for live data</span>
     </div>
   );
 }

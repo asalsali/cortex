@@ -8,53 +8,11 @@ import { SkeletonList } from "@/components/Skeleton";
 import Modal from "@/components/Modal";
 import styles from "./page.module.css";
 
-function getIconClass(sourceType: string): string {
-  switch (sourceType) {
-    case "slack": return styles.iconSlack;
-    case "notion": return styles.iconNotion;
-    case "git": return styles.iconGit;
-    default: return styles.iconManual;
-  }
-}
-
-function getIconLabel(sourceType: string): string {
-  switch (sourceType) {
-    case "slack": return "#";
-    case "notion": return "N";
-    case "git": return "<>";
-    default: return "+";
-  }
-}
-
-function getStatusDotClass(status: string): string {
+function getStatusClass(status: string): string {
   switch (status) {
     case "connected": return styles.statusConnected;
     case "pending": return styles.statusPending;
-    default: return styles.statusAvailable;
-  }
-}
-
-function getStatusTextClass(status: string): string {
-  switch (status) {
-    case "connected": return styles.statusTextConnected;
-    case "pending": return styles.statusTextPending;
-    default: return styles.statusTextAvailable;
-  }
-}
-
-function getButtonClass(status: string): string {
-  switch (status) {
-    case "connected": return styles.connectBtnDisabled;
-    case "pending": return styles.connectBtnSecondary;
-    default: return styles.connectBtnPrimary;
-  }
-}
-
-function getButtonLabel(status: string): string {
-  switch (status) {
-    case "connected": return "Connected";
-    case "pending": return "Complete Setup";
-    default: return "Connect";
+    default: return styles.statusDefault;
   }
 }
 
@@ -90,64 +48,41 @@ export default function SourcesPage() {
       </div>
 
       {loading ? (
-        <SkeletonList count={4} lines={3} />
+        <SkeletonList count={4} lines={2} />
       ) : !integrations || integrations.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "60px 20px", color: "#6b7280" }}>
-          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "#9ca3b4" }}>
-            No integrations available
-          </div>
-          <p>Check your API connection to see available sources.</p>
+        <div className={styles.emptyState}>
+          <p className={styles.emptyText}>
+            No integrations available. Check your API connection.
+          </p>
         </div>
       ) : (
-        <div className={styles.grid}>
+        <div className={styles.list}>
           {integrations.map((integration) => (
-            <div key={integration.id} className={styles.card}>
-              <div className={styles.cardTop}>
-                <div
-                  className={`${styles.iconBox} ${getIconClass(integration.sourceType)}`}
-                >
-                  {getIconLabel(integration.sourceType)}
-                </div>
-                <div className={styles.cardInfo}>
-                  <div className={styles.cardName}>{integration.name}</div>
-                  <div className={styles.cardStatus}>
-                    <span
-                      className={`${styles.statusDot} ${getStatusDotClass(integration.status)}`}
-                    />
-                    <span className={getStatusTextClass(integration.status)}>
-                      {integration.status}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  className={getButtonClass(integration.status)}
-                  onClick={() => {
-                    if (integration.status !== "connected") {
-                      setSetupModal(integration.sourceType);
-                    }
-                  }}
-                  disabled={integration.status === "connected"}
-                >
-                  {getButtonLabel(integration.status)}
-                </button>
+            <div key={integration.id} className={styles.row}>
+              <div className={styles.rowMain}>
+                <div className={styles.rowName}>{integration.name}</div>
+                <p className={styles.rowDesc}>{integration.description}</p>
               </div>
-              <p className={styles.cardDesc}>{integration.description}</p>
-              <div className={styles.cardMeta}>
+              <div className={styles.rowStatus}>
+                <span className={`${styles.statusDot} ${getStatusClass(integration.status)}`} />
+                <span className={styles.statusText}>{integration.status}</span>
+              </div>
+              <div className={styles.rowMeta}>
                 {integration.factCount > 0 && (
-                  <span>{integration.factCount} facts extracted</span>
+                  <span>{integration.factCount} facts</span>
                 )}
                 {integration.lastSyncAt && (
-                  <span>Last sync: {formatDate(integration.lastSyncAt)}</span>
+                  <span>{formatDate(integration.lastSyncAt)}</span>
                 )}
-                {!integration.lastSyncAt &&
-                  integration.status === "available" && (
-                    <span>Not connected</span>
-                  )}
-                {!integration.lastSyncAt &&
-                  integration.status === "pending" && (
-                    <span>Awaiting OAuth authorization</span>
-                  )}
               </div>
+              {integration.status !== "connected" && (
+                <button
+                  className={styles.connectBtn}
+                  onClick={() => setSetupModal(integration.sourceType)}
+                >
+                  {integration.status === "pending" ? "Complete Setup" : "Connect"}
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -158,26 +93,12 @@ export default function SourcesPage() {
         onClose={() => setSetupModal(null)}
         title={`Connect ${selectedIntegration?.name ?? "Source"}`}
       >
-        <div style={{ fontSize: 13, color: "#9ca3b4", lineHeight: 1.8 }}>
-          <pre
-            style={{
-              whiteSpace: "pre-wrap",
-              fontFamily: "var(--font-mono)",
-              fontSize: 12,
-              background: "#0f1117",
-              padding: 16,
-              borderRadius: 8,
-              border: "1px solid #2a2d3e",
-              color: "#e8eaed",
-            }}
-          >
-            {SETUP_INSTRUCTIONS[setupModal ?? "manual"]}
-          </pre>
-          <p style={{ marginTop: 16, color: "#6b7280", fontSize: 12 }}>
-            OAuth integration is coming soon. For now, follow the manual steps above
-            and configure your credentials in Settings.
-          </p>
-        </div>
+        <pre className={styles.setupCode}>
+          {SETUP_INSTRUCTIONS[setupModal ?? "manual"]}
+        </pre>
+        <p className={styles.setupNote}>
+          OAuth integration is coming soon. Follow the steps above to configure manually.
+        </p>
       </Modal>
     </div>
   );

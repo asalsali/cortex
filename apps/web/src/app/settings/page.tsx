@@ -30,39 +30,33 @@ export default function SettingsPage() {
     <div className={styles.page}>
       <div className={styles.header}>
         <h1 className={styles.title}>Settings</h1>
-        <p className={styles.subtitle}>Manage your workspace configuration</p>
+        <p className={styles.subtitle}>Manage your workspace</p>
       </div>
 
       {/* General */}
       <div className={styles.section}>
         <div className={styles.sectionTitle}>General</div>
-        <div className={styles.card}>
+        <div className={styles.rows}>
           <div className={styles.row}>
-            <div>
-              <div className={styles.rowLabel}>Workspace Name</div>
-            </div>
+            <div className={styles.rowLabel}>Workspace</div>
             <div className={styles.rowValue}>Meridian</div>
           </div>
           <div className={styles.row}>
             <div>
               <div className={styles.rowLabel}>Plan</div>
-              <div className={styles.rowDesc}>Team plan, billed monthly</div>
+              <div className={styles.rowDesc}>billed monthly</div>
             </div>
             <div className={styles.rowValue}>Team ($12/user/mo)</div>
           </div>
           <div className={styles.row}>
             <div>
-              <div className={styles.rowLabel}>Dream Cycle Schedule</div>
-              <div className={styles.rowDesc}>
-                Overnight consolidation runs
-              </div>
+              <div className={styles.rowLabel}>Dream Cycle</div>
+              <div className={styles.rowDesc}>overnight consolidation</div>
             </div>
             <div className={styles.rowValue}>Daily, 2:00 AM PST</div>
           </div>
           <div className={styles.row}>
-            <div>
-              <div className={styles.rowLabel}>Default Search Mode</div>
-            </div>
+            <div className={styles.rowLabel}>Search Mode</div>
             <div className={styles.rowValue}>Standard</div>
           </div>
         </div>
@@ -70,41 +64,28 @@ export default function SettingsPage() {
 
       {/* API Keys */}
       <div className={styles.section}>
-        <div className={styles.sectionTitle}>API Keys</div>
-        <div className={styles.card}>
-          <div className={styles.row}>
-            <div>
-              <div className={styles.rowLabel}>Agent API Key</div>
-              <div className={styles.rowDesc}>
-                Use this key for MCP server and REST API access
-              </div>
-            </div>
-          </div>
-          <div className={styles.apiKey}>
-            <span>ctx_live_mrd_••••••••••••••••••••k4Qm</span>
-            <button className={styles.copyBtn} onClick={handleCopy}>
-              {copied ? "Copied" : "Copy"}
-            </button>
-          </div>
+        <div className={styles.sectionTitle}>API Key</div>
+        <div className={styles.apiKeyRow}>
+          <code className={styles.apiKeyValue}>ctx_live_mrd_••••••••k4Qm</code>
+          <button className={styles.copyBtn} onClick={handleCopy}>
+            {copied ? "Copied" : "Copy"}
+          </button>
         </div>
       </div>
 
       {/* Team */}
       <div className={styles.section}>
-        <div className={styles.sectionTitle}>Team Members</div>
-        <div className={styles.card}>
-          <div className={styles.teamList}>
-            {team.map((member) => (
-              <div key={member.email} className={styles.teamMember}>
-                <div className={styles.teamAvatar}>{member.initials}</div>
-                <div className={styles.teamInfo}>
-                  <div className={styles.teamName}>{member.name}</div>
-                  <div className={styles.teamEmail}>{member.email}</div>
-                </div>
-                <span className={styles.teamRole}>{member.role}</span>
+        <div className={styles.sectionTitle}>Team</div>
+        <div className={styles.teamList}>
+          {team.map((member) => (
+            <div key={member.email} className={styles.teamRow}>
+              <div className={styles.teamInfo}>
+                <span className={styles.teamName}>{member.name}</span>
+                <span className={styles.teamEmail}>{member.email}</span>
               </div>
-            ))}
-          </div>
+              <span className={styles.teamRole}>{member.role}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

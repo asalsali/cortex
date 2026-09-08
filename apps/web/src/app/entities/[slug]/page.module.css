@@ -1,133 +1,141 @@
 .page {
-  max-width: 860px;
+  max-width: var(--content-max);
 }
 
 .backLink {
   font-size: 12px;
-  color: var(--text-tertiary);
-  margin-bottom: 20px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
   display: inline-block;
   font-family: var(--font-mono);
+  letter-spacing: 0.01em;
 }
 
 .backLink:hover {
-  color: var(--accent-primary);
+  color: var(--text-secondary);
 }
 
 /* Header */
 .header {
-  margin-bottom: 28px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border-primary);
-}
-
-.headerRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 40px;
 }
 
 .name {
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.typeBadge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  margin-bottom: 8px;
+  line-height: 1.1;
 }
 
 .headerMeta {
   display: flex;
-  gap: 16px;
-  font-size: 12px;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
   color: var(--text-muted);
-  font-family: var(--font-mono);
 }
 
-/* Compiled Truth */
+.typeLabel {
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.metaSep {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+/* Sections */
 .section {
-  margin-bottom: 28px;
+  margin-bottom: 48px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .sectionTitle {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-tertiary);
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.sectionTitleIcon {
-  font-family: var(--font-mono);
   font-size: 11px;
-  opacity: 0.5;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 16px;
 }
 
-.truthCard {
-  padding: 20px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--accent-border);
-  border-radius: var(--radius-md);
-  font-size: 14px;
+.sectionHeader .sectionTitle {
+  margin-bottom: 0;
+}
+
+/* Compiled Truth — prose, not a card */
+.truthBlock {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.addFactBtn {
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 400;
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  font-family: var(--font-mono);
+}
+
+.addFactBtn:hover {
   color: var(--text-primary);
-  line-height: 1.7;
-  border-left: 3px solid var(--accent-primary);
+  border-color: var(--border-focus);
 }
 
 /* Facts */
 .factsList {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0;
 }
 
 .factItem {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 12px 14px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-secondary);
-  border-radius: var(--radius-md);
-  transition: background 0.15s ease;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-secondary);
 }
 
-.factItem:hover {
-  background: var(--bg-tertiary);
-}
-
-.factSuperseded {
+.factItemSuperseded {
   composes: factItem;
-  opacity: 0.55;
-}
-
-.factDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-top: 5px;
-  flex-shrink: 0;
+  opacity: 0.4;
 }
 
 .factDotCurrent {
-  composes: factDot;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: 7px;
+  flex-shrink: 0;
   background: var(--status-current);
-  box-shadow: 0 0 6px rgba(52, 211, 153, 0.3);
 }
 
 .factDotSuperseded {
-  composes: factDot;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: 7px;
+  flex-shrink: 0;
   background: var(--text-muted);
 }
 
@@ -136,120 +144,119 @@
 }
 
 .factText {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-primary);
-  line-height: 1.5;
-  margin-bottom: 6px;
+  line-height: 1.55;
+  margin-bottom: 4px;
 }
 
 .factMeta {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 11px;
   color: var(--text-muted);
   font-family: var(--font-mono);
 }
 
-.factBadge {
-  font-size: 10px;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-}
-
-.factBadgeCurrent {
-  composes: factBadge;
-  background: rgba(52, 211, 153, 0.1);
-  color: var(--status-current);
-}
-
-.factBadgeSuperseded {
-  composes: factBadge;
-  background: rgba(107, 114, 128, 0.1);
-  color: var(--text-muted);
-}
-
 .supersessionNote {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   font-style: italic;
   margin-top: 4px;
-  padding-left: 12px;
-  border-left: 2px solid var(--border-primary);
 }
 
-/* Related Entities */
-.chips {
+.emptyText {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+/* Related Entities — inline text links */
+.relatedList {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0;
 }
 
-.chip {
-  padding: 5px 12px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-primary);
-  border-radius: 20px;
-  font-size: 12px;
-  color: var(--text-secondary);
+.relatedLink {
+  font-size: 13px;
+  color: var(--text-tertiary);
   text-decoration: none;
-  transition: all 0.15s ease;
+  padding: 2px 0;
 }
 
-.chip:hover {
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  background: var(--accent-muted);
+.relatedLink:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--text-muted);
 }
 
-/* Timeline */
-.timeline {
-  position: relative;
-  padding-left: 24px;
+.relatedLink::after {
+  content: ",\00a0";
+  color: var(--text-muted);
 }
 
-.timeline::before {
+.relatedLink:last-child::after {
   content: "";
-  position: absolute;
-  left: 3px;
-  top: 8px;
-  bottom: 8px;
-  width: 1px;
-  background: var(--border-primary);
+}
+
+/* Timeline — elegant vertical line */
+.timeline {
+  display: flex;
+  flex-direction: column;
 }
 
 .timelineItem {
+  display: flex;
+  gap: 20px;
+}
+
+.timelineTrack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 1px;
+  flex-shrink: 0;
   position: relative;
-  padding: 8px 0 16px 0;
 }
 
 .timelineDot {
-  position: absolute;
-  left: -24px;
-  top: 12px;
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--accent-primary);
-  border: 2px solid var(--bg-primary);
+  background: var(--text-muted);
+  flex-shrink: 0;
+  margin-top: 5px;
+  position: relative;
+  z-index: 1;
 }
 
-.timelineDotSuperseded {
-  composes: timelineDot;
-  background: var(--text-muted);
+.timelineLine {
+  width: 1px;
+  flex: 1;
+  background: var(--border-primary);
+  min-height: 20px;
+}
+
+.timelineBody {
+  padding-bottom: 24px;
+  flex: 1;
 }
 
 .timelineDate {
   font-size: 11px;
-  font-family: var(--font-mono);
   color: var(--text-muted);
-  margin-bottom: 3px;
+  margin-bottom: 2px;
+  font-family: var(--font-mono);
 }
 
 .timelineContent {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-primary);
-  margin-bottom: 3px;
+  line-height: 1.55;
+  margin-bottom: 2px;
 }
 
 .timelineSource {
@@ -257,35 +264,9 @@
   color: var(--text-muted);
 }
 
-.timelineArrow {
-  font-size: 11px;
-  color: var(--status-volatile);
-  font-family: var(--font-mono);
-  margin-left: 4px;
-}
-
 /* Not found */
 .notFound {
-  text-align: center;
-  padding: 80px 20px;
-  color: var(--text-tertiary);
-}
-
-.notFoundTitle {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: var(--text-secondary);
-}
-
-.sourceIcon {
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: 700;
-  font-family: var(--font-mono);
+  padding: 80px 0;
+  color: var(--text-muted);
+  font-size: 14px;
 }

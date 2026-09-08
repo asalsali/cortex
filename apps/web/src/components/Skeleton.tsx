@@ -1,9 +1,5 @@
 "use client";
 
-/**
- * Skeleton loaders matching the Cortex dark theme.
- */
-
 interface SkeletonProps {
   width?: string | number;
   height?: string | number;
@@ -13,8 +9,8 @@ interface SkeletonProps {
 
 export function Skeleton({
   width = "100%",
-  height = 16,
-  borderRadius = 6,
+  height = 14,
+  borderRadius = 3,
   style,
 }: SkeletonProps) {
   return (
@@ -24,7 +20,7 @@ export function Skeleton({
         height,
         borderRadius,
         background:
-          "linear-gradient(90deg, #1c1f2e 25%, #262a3d 50%, #1c1f2e 75%)",
+          "linear-gradient(90deg, #111113 25%, #161618 50%, #111113 75%)",
         backgroundSize: "200% 100%",
         animation: "shimmer 1.5s infinite ease-in-out",
         ...style,
@@ -35,21 +31,14 @@ export function Skeleton({
 
 export function SkeletonCard({ lines = 3 }: { lines?: number }) {
   return (
-    <div
-      style={{
-        padding: 18,
-        background: "#161921",
-        border: "1px solid #1e2130",
-        borderRadius: 8,
-      }}
-    >
-      <Skeleton width="60%" height={14} style={{ marginBottom: 12 }} />
+    <div style={{ padding: "12px 0" }}>
+      <Skeleton width="40%" height={13} style={{ marginBottom: 10 }} />
       {Array.from({ length: lines }).map((_, i) => (
         <Skeleton
           key={i}
-          width={i === lines - 1 ? "40%" : "100%"}
-          height={12}
-          style={{ marginBottom: 8 }}
+          width={i === lines - 1 ? "25%" : "100%"}
+          height={10}
+          style={{ marginBottom: 6 }}
         />
       ))}
     </div>
@@ -58,7 +47,7 @@ export function SkeletonCard({ lines = 3 }: { lines?: number }) {
 
 export function SkeletonList({ count = 5, lines = 2 }: { count?: number; lines?: number }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonCard key={i} lines={lines} />
       ))}

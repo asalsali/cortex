@@ -8,15 +8,15 @@ import IngestModal from "./IngestModal";
 import styles from "./Sidebar.module.css";
 
 const navItems = [
-  { href: "/", label: "Search", icon: "/" },
-  { href: "/entities", label: "Entities", icon: "E" },
-  { href: "/timeline", label: "Timeline", icon: "T" },
-  { href: "/sources", label: "Sources", icon: "S" },
-  { href: "/dream", label: "Dream Cycle", icon: "D" },
+  { href: "/", label: "Search" },
+  { href: "/entities", label: "Entities" },
+  { href: "/timeline", label: "Timeline" },
+  { href: "/sources", label: "Sources" },
+  { href: "/dream", label: "Dream Cycle" },
 ];
 
-const settingsItems = [
-  { href: "/settings", label: "Settings", icon: "*" },
+const systemItems = [
+  { href: "/settings", label: "Settings" },
 ];
 
 export default function Sidebar() {
@@ -32,11 +32,7 @@ export default function Sidebar() {
     <>
       <aside className={styles.sidebar}>
         <div className={styles.logo}>
-          <div className={styles.logoMark}>
-            <div className={styles.logoIcon}>C</div>
-            <span className={styles.logoText}>Cortex</span>
-          </div>
-          <div className={styles.tenant}>meridian</div>
+          <span className={styles.logoText}>Cortex</span>
         </div>
 
         <nav className={styles.nav}>
@@ -48,8 +44,7 @@ export default function Sidebar() {
                 href={item.href}
                 className={isActive(item.href) ? styles.navItemActive : styles.navItem}
               >
-                <span className={styles.navIcon}>{item.icon}</span>
-                <span className={styles.navLabel}>{item.label}</span>
+                {item.label}
               </Link>
             ))}
           </div>
@@ -59,23 +54,21 @@ export default function Sidebar() {
             <button
               className={styles.navItem}
               onClick={() => setIngestOpen(true)}
-              style={{ border: "none", background: "none", textAlign: "left", width: "100%" }}
+              style={{ border: "none", background: "none", textAlign: "left", width: "100%", cursor: "pointer" }}
             >
-              <span className={styles.navIcon}>+</span>
-              <span className={styles.navLabel}>Add Knowledge</span>
+              Add Knowledge
             </button>
           </div>
 
           <div className={styles.navSection}>
             <div className={styles.sectionLabel}>System</div>
-            {settingsItems.map((item) => (
+            {systemItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={isActive(item.href) ? styles.navItemActive : styles.navItem}
               >
-                <span className={styles.navIcon}>{item.icon}</span>
-                <span className={styles.navLabel}>{item.label}</span>
+                {item.label}
               </Link>
             ))}
           </div>
