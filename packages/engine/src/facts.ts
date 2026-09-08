@@ -230,25 +230,25 @@ export class FactsEngine {
    */
   private buildSupersessionChains(allFacts: Fact[]): SupersessionChain[] {
     const byId = new Map(allFacts.map((f) => [f.id, f]));
+    const supersededByMap = new Map<string, Fact>(); // maps target -> source (who was superseded into target)
+    for (const f of allFacts) {
+      if (f.supersededBy && byId.has(f.supersededBy)) {
+        supersededByMap.set(f.supersededBy, f);
+      }
+    }
+
     const visited = new Set<string>();
     const chains: SupersessionChain[] = [];
 
-    // Find chain roots (facts that are not superseded by anything in our set)
-    for (const fact of allFacts) {
-      if (visited.has(fact.id)) continue;
-      if (fact.supersededBy && byId.has(fact.supersededBy)) continue; // not a leaf
+    // Find chain roots: facts that no other fact supersedes into
+    const roots = allFacts.filter((f) => {
+      return !allFacts.some((other) => other.supersededBy === f.id);
+    });
 
-      // Walk backwards to find the root
-      let root = fact;
-      const predecessors = allFacts.filter((f) => f.supersededBy === root.id);
-      while (predecessors.length > 0) {
-        root = predecessors[0];
-        const next = allFacts.filter((f) => f.supersededBy === root.id);
-        if (next.length === 0) break;
-        root = next[0];
-      }
+    for (const root of roots) {
+      if (visited.has(root.id)) continue;
 
-      // Walk forward from root
+      // Walk forward from root via supersededBy pointers
       const chain: Fact[] = [];
       let current: Fact | undefined = root;
       while (current && !visited.has(current.id)) {

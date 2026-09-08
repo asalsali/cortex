@@ -406,7 +406,7 @@ export class SearchPipeline {
 
       // 8a: Recency boost
       if (c.validFrom || c.updatedAt) {
-        const refDate = c.validFrom ?? c.updatedAt!;
+        const refDate = new Date(c.validFrom ?? c.updatedAt!);
         const ageDays = (Date.now() - refDate.getTime()) / (1000 * 60 * 60 * 24);
         const halfLife = RECENCY_HALF_LIFE[intent.intent] ?? 180;
         const recencyBoost = Math.exp(-ageDays / halfLife);

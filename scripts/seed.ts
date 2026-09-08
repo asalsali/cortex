@@ -5,8 +5,8 @@
  * Usage: bun run scripts/seed.ts
  */
 
-import { createDb, schema } from "@cortex/db";
-import { contentHash } from "@cortex/shared";
+import { createDb, schema } from "../packages/db/src/index";
+import { contentHash } from "../packages/shared/src/index";
 import { eq, and } from "drizzle-orm";
 
 const db = createDb(
