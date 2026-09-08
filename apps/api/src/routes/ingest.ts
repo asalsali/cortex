@@ -3,6 +3,7 @@ import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { schema } from "@cortex/db";
 import { contentHash, chunkText } from "@cortex/shared";
+import { extractFromText } from "@cortex/engine";
 import type { AppEnv } from "../index";
 
 const ingestSchema = z.object({
@@ -11,13 +12,14 @@ const ingestSchema = z.object({
   type: z.enum(["entity", "document", "decision", "transcript"]).optional(),
   sourceType: z.enum(["slack", "notion", "git", "manual", "agent", "meeting", "google_docs"]).optional(),
   sourceRef: z.string().optional(),
+  extract: z.boolean().optional(), // whether to run entity extraction
 });
 
 export const ingestRoutes = new Hono<AppEnv>();
 
 /**
  * POST /api/v1/ingest -- Manual content upload.
- * Creates a page and its content chunks.
+ * Creates a page, chunks it, and optionally extracts entities/facts.
  */
 ingestRoutes.post("/ingest", async (c) => {
   const body = await c.req.json();
@@ -30,6 +32,7 @@ ingestRoutes.post("/ingest", async (c) => {
   const tenantId = c.get("tenantId");
   const db = c.get("db");
   const { title, content, type, sourceType, sourceRef } = parsed.data;
+  const shouldExtract = parsed.data.extract ?? true;
 
   // Generate slug from title
   const slug = title
@@ -82,11 +85,72 @@ ingestRoutes.post("/ingest", async (c) => {
     );
   }
 
+  // Entity extraction (LLM with regex fallback)
+  let factsCreated = 0;
+  let entitiesFound = 0;
+  let extractionMethod = "none";
+
+  if (shouldExtract) {
+    try {
+      const extraction = await extractFromText(content, title);
+      extractionMethod = extraction.method;
+      entitiesFound = extraction.entities.length;
+
+      // Create entity pages for newly discovered entities
+      for (const entity of extraction.entities) {
+        try {
+          await db
+            .insert(schema.pages)
+            .values({
+              tenantId,
+              slug: entity.slug,
+              type: "entity",
+              title: entity.name,
+              sourceType: sourceType ?? "manual",
+              extractedBy: extraction.method === "llm" ? "llm" : "connector",
+            })
+            .onConflictDoNothing();
+        } catch {
+          // Entity page may already exist, that is fine
+        }
+      }
+
+      // Insert extracted facts
+      for (const fact of extraction.facts) {
+        try {
+          const factHash = contentHash(fact.content);
+          await db
+            .insert(schema.facts)
+            .values({
+              tenantId,
+              entitySlug: fact.entitySlug,
+              content: fact.content,
+              kind: fact.kind,
+              confidence: fact.confidence,
+              visibility: "public",
+              sourceType: sourceType ?? "manual",
+              sourceRef: sourceRef ?? null,
+              extractedBy: extraction.method === "llm" ? "llm" : "connector",
+              contentHash: factHash,
+            });
+          factsCreated++;
+        } catch {
+          // Duplicate facts are skipped
+        }
+      }
+    } catch (err) {
+      console.error("[Ingest] Extraction error (non-fatal):", err);
+    }
+  }
+
   return c.json(
     {
       pageId: page.id,
       slug,
       chunksCreated: chunks.length,
+      factsCreated,
+      entitiesFound,
+      extractionMethod,
       status: "created",
     },
     201

@@ -1,10 +1,11 @@
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { schema } from "@cortex/db";
-import { getConnector } from "@cortex/connectors";
 import type { PhaseContext, PhaseResult } from "../runner";
 
 /**
  * SYNC phase: Pull new content from all connected integrations.
+ * Currently logs sync intent -- actual connector sync is deferred until
+ * source connectors are fully wired (Slack OAuth, Notion, etc.).
  */
 export async function syncPhase(ctx: PhaseContext): Promise<PhaseResult> {
   const startedAt = new Date().toISOString();
@@ -23,24 +24,12 @@ export async function syncPhase(ctx: PhaseContext): Promise<PhaseResult> {
     );
 
   for (const integration of integrations) {
-    const connector = getConnector(integration.sourceType);
-    if (!connector) {
-      errors.push(`No connector for source type: ${integration.sourceType}`);
-      continue;
-    }
-
     try {
-      const result = await connector.sync({
-        id: integration.id,
-        tenantId: integration.tenantId,
-        sourceType: integration.sourceType as any,
-        config: integration.config as any,
-        status: integration.status as any,
-        lastSyncAt: integration.lastSyncAt,
-      });
-
-      itemsProcessed += result.pagesCreated + result.pagesUpdated;
-      errors.push(...result.errors);
+      // Stub: log that we would sync this integration
+      console.log(
+        `[Sync] Would sync ${integration.sourceType} integration ${integration.id}`
+      );
+      itemsProcessed++;
 
       // Update last sync time
       await ctx.db
@@ -50,11 +39,6 @@ export async function syncPhase(ctx: PhaseContext): Promise<PhaseResult> {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       errors.push(`Sync failed for ${integration.sourceType}: ${msg}`);
-
-      await ctx.db
-        .update(schema.integrations)
-        .set({ status: "error", lastError: msg, updatedAt: new Date() })
-        .where(eq(schema.integrations.id, integration.id));
     }
   }
 

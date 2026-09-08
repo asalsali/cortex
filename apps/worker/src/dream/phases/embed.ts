@@ -1,51 +1,54 @@
-import { sql } from "drizzle-orm";
 import { EMBEDDING_BATCH_SIZE } from "@cortex/shared";
+import { getEmbeddingService } from "@cortex/engine";
 import type { PhaseContext, PhaseResult } from "../runner";
 
 /**
  * EMBED phase: Generate embeddings for chunks and facts that lack them.
- * Uses Voyage AI API.
+ * Uses Voyage AI API. Gracefully skips if no API key.
  */
 export async function embedPhase(ctx: PhaseContext): Promise<PhaseResult> {
   const startedAt = new Date().toISOString();
   let itemsProcessed = 0;
   const errors: string[] = [];
 
-  // Find chunks without embeddings
-  const result = await ctx.db.execute(sql`
-    SELECT id, chunk_text
-    FROM content_chunks
-    WHERE tenant_id = ${ctx.tenantId}::uuid
-      AND embedded_at IS NULL
-    ORDER BY created_at ASC
-    LIMIT ${EMBEDDING_BATCH_SIZE}
-  `);
+  const embeddingService = getEmbeddingService();
 
-  const chunks = result.rows ?? (result as any);
-
-  if (chunks.length > 0) {
-    // In production: batch call Voyage AI API
-    // const embeddings = await voyageEmbed(chunks.map(c => c.chunk_text));
-    // Then update: UPDATE content_chunks SET embedding = $vec, embedded_at = now() WHERE id = $id
-    console.log(`[Embed] Would embed ${chunks.length} chunks`);
-    itemsProcessed += chunks.length;
+  if (!embeddingService.isAvailable()) {
+    console.log("[Embed] No VOYAGE_API_KEY set, skipping embedding phase");
+    return {
+      startedAt,
+      completedAt: new Date().toISOString(),
+      itemsProcessed: 0,
+      errors: [],
+    };
   }
 
-  // Find facts without embeddings
-  const factsResult = await ctx.db.execute(sql`
-    SELECT id, content
-    FROM facts
-    WHERE tenant_id = ${ctx.tenantId}::uuid
-      AND embedding IS NULL
-    ORDER BY created_at ASC
-    LIMIT ${EMBEDDING_BATCH_SIZE}
-  `);
+  try {
+    // Embed unembedded chunks
+    const chunksEmbedded = await embeddingService.embedUnembeddedChunks(
+      ctx.db,
+      ctx.tenantId,
+      EMBEDDING_BATCH_SIZE
+    );
+    console.log(`[Embed] Embedded ${chunksEmbedded} chunks`);
+    itemsProcessed += chunksEmbedded;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    errors.push(`Chunk embedding failed: ${msg}`);
+  }
 
-  const factsToEmbed = factsResult.rows ?? (factsResult as any);
-
-  if (factsToEmbed.length > 0) {
-    console.log(`[Embed] Would embed ${factsToEmbed.length} facts`);
-    itemsProcessed += factsToEmbed.length;
+  try {
+    // Embed unembedded facts
+    const factsEmbedded = await embeddingService.embedUnembeddedFacts(
+      ctx.db,
+      ctx.tenantId,
+      EMBEDDING_BATCH_SIZE
+    );
+    console.log(`[Embed] Embedded ${factsEmbedded} facts`);
+    itemsProcessed += factsEmbedded;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    errors.push(`Fact embedding failed: ${msg}`);
   }
 
   return {

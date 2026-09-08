@@ -16,11 +16,14 @@
     "db:migrate": "bun run --filter @cortex/db migrate",
     "db:push": "bun run --filter @cortex/db push",
     "db:studio": "bun run --filter @cortex/db studio",
+    "db:seed": "bun run scripts/seed.ts",
+    "db:apply": "bun run scripts/migrate.ts",
     "lint": "biome check .",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",
+    "@types/node": "^26.5.0",
     "typescript": "^5.6.0"
   }
 }

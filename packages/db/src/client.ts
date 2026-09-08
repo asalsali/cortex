@@ -10,7 +10,10 @@ import * as schema from "./schema";
 export function createDb(connectionUrl?: string) {
   const url = connectionUrl ?? process.env.DATABASE_URL;
   if (!url) {
-    throw new Error("DATABASE_URL is required");
+    throw new Error(
+      "DATABASE_URL is required. Set it in .env or pass it directly.\n" +
+      "Default: postgres://postgres:postgres@localhost:5432/cortex"
+    );
   }
 
   const client = postgres(url, {
@@ -30,7 +33,10 @@ export type Database = ReturnType<typeof createDb>;
 export function createDirectDb() {
   const url = process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL;
   if (!url) {
-    throw new Error("DATABASE_URL or DATABASE_URL_UNPOOLED is required");
+    throw new Error(
+      "DATABASE_URL or DATABASE_URL_UNPOOLED is required.\n" +
+      "Default: postgres://postgres:postgres@localhost:5432/cortex"
+    );
   }
 
   const client = postgres(url, {
@@ -40,4 +46,20 @@ export function createDirectDb() {
   });
 
   return drizzle(client, { schema });
+}
+
+/**
+ * Get the raw postgres.js client for health checks and raw SQL.
+ */
+export function createRawClient(connectionUrl?: string) {
+  const url = connectionUrl ?? process.env.DATABASE_URL;
+  if (!url) {
+    throw new Error("DATABASE_URL is required");
+  }
+
+  return postgres(url, {
+    max: 1,
+    idle_timeout: 10,
+    connect_timeout: 5,
+  });
 }

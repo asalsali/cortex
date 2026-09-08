@@ -1,16 +1,18 @@
 import { sql } from "drizzle-orm";
+import { extractFromText } from "@cortex/engine";
+import { schema } from "@cortex/db";
 import type { PhaseContext, PhaseResult } from "../runner";
 
 /**
  * EXTRACT phase: Entity + relationship + fact extraction from new pages.
- * Uses LLM (Haiku) for structured extraction.
+ * Uses Anthropic Haiku for structured extraction (regex fallback).
  */
 export async function extractPhase(ctx: PhaseContext): Promise<PhaseResult> {
   const startedAt = new Date().toISOString();
   let itemsProcessed = 0;
   const errors: string[] = [];
 
-  // Find pages modified since last dream cycle
+  // Find pages modified since last dream cycle that have not been extracted
   const result = await ctx.db.execute(sql`
     SELECT p.id, p.title, p.raw_content, p.slug
     FROM pages p
@@ -26,16 +28,65 @@ export async function extractPhase(ctx: PhaseContext): Promise<PhaseResult> {
     LIMIT 100
   `);
 
-  const pages = result.rows ?? (result as any);
+  const pages = (result.rows ?? (result as any)) as Array<{
+    id: string;
+    title: string;
+    raw_content: string;
+    slug: string;
+  }>;
 
   for (const page of pages) {
     try {
-      // In production: call Haiku LLM with extraction prompt
-      // For now, log that extraction is pending
-      console.log(`[Extract] Would extract entities/facts from page: ${page.title}`);
+      if (!page.raw_content) continue;
+
+      const extraction = await extractFromText(page.raw_content, page.title);
+
+      // Create entity pages for discovered entities
+      for (const entity of extraction.entities) {
+        try {
+          await ctx.db
+            .insert(schema.pages)
+            .values({
+              tenantId: ctx.tenantId,
+              slug: entity.slug,
+              type: "entity",
+              title: entity.name,
+              extractedBy: extraction.method === "llm" ? "llm" : "connector",
+            })
+            .onConflictDoNothing();
+        } catch {
+          // Entity page may already exist
+        }
+      }
+
+      // Insert extracted facts
+      let factsCreated = 0;
+      for (const fact of extraction.facts) {
+        try {
+          await ctx.db
+            .insert(schema.facts)
+            .values({
+              tenantId: ctx.tenantId,
+              entitySlug: fact.entitySlug,
+              content: fact.content,
+              kind: fact.kind,
+              confidence: fact.confidence,
+              visibility: "public",
+              extractedBy: extraction.method === "llm" ? "llm" : "connector",
+            });
+          factsCreated++;
+        } catch {
+          // Duplicate or constraint violation -- skip
+        }
+      }
+
+      console.log(
+        `[Extract] Page "${page.title}": ${extraction.entities.length} entities, ${factsCreated} facts (${extraction.method})`
+      );
       itemsProcessed++;
     } catch (err) {
-      errors.push(`Extract failed for page ${page.id}: ${err}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      errors.push(`Extract failed for page ${page.id}: ${msg}`);
     }
   }
 

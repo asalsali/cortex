@@ -26,6 +26,7 @@ import {
   packByBudget,
 } from "@cortex/shared";
 import { classifyIntent, type IntentResult } from "./intent";
+import { getEmbeddingService } from "./embeddings";
 
 const { pages, contentChunks, facts, edges } = schema;
 
@@ -214,22 +215,97 @@ export class SearchPipeline {
 
   /**
    * Stage 3b: Vector search using pgvector HNSW.
-   * Requires query embedding -- stubbed to return empty until embedding service is wired.
+   * Generates a query embedding via Voyage AI, then runs cosine similarity search.
+   * Returns empty if no API key or no embeddings exist.
    */
   private async vectorSearch(
     tenantId: string,
     query: string
   ): Promise<ScoredCandidate[]> {
-    // Vector search requires a query embedding. In production, this would
-    // call the Voyage AI API. For now, return empty -- keyword search still works.
-    // When wired: generate embedding, then:
-    //
-    // SELECT id, chunk_text, 1 - (embedding <=> $queryEmbedding) as cosine
-    // FROM content_chunks
-    // WHERE tenant_id = $tenantId
-    // ORDER BY embedding <=> $queryEmbedding
-    // LIMIT 50
-    return [];
+    const embeddingService = getEmbeddingService();
+    if (!embeddingService.isAvailable()) {
+      return [];
+    }
+
+    const queryEmbedding = await embeddingService.embedQuery(query);
+    if (!queryEmbedding || queryEmbedding.length === 0) {
+      return [];
+    }
+
+    const vecStr = JSON.stringify(queryEmbedding);
+    const candidates: ScoredCandidate[] = [];
+
+    try {
+      // Search content chunks
+      const chunkResults = await this.db.execute(sql`
+        SELECT
+          cc.id, cc.chunk_text, cc.chunk_source, cc.page_id,
+          p.title as page_title, p.slug, p.source_type,
+          1 - (cc.embedding <=> ${vecStr}::vector) as cosine
+        FROM content_chunks cc
+        JOIN pages p ON p.id = cc.page_id
+        WHERE cc.tenant_id = ${tenantId}::uuid
+          AND cc.embedding IS NOT NULL
+        ORDER BY cc.embedding <=> ${vecStr}::vector
+        LIMIT ${SEARCH_CANDIDATE_POOL}
+      `);
+
+      const chunks = chunkResults.rows ?? (chunkResults as any);
+      for (const row of chunks) {
+        candidates.push({
+          id: row.id,
+          type: "chunk",
+          title: row.page_title ?? "",
+          content: row.chunk_text,
+          score: Number(row.cosine),
+          sourceType: row.source_type,
+          sourceRef: null,
+          sourceAuthor: null,
+          validFrom: null,
+          entitySlug: row.slug,
+          chunkSource: row.chunk_source,
+          cosine: Number(row.cosine),
+          pageTitle: row.page_title,
+        });
+      }
+
+      // Search facts
+      const factResults = await this.db.execute(sql`
+        SELECT
+          id, entity_slug, content, kind, confidence,
+          source_type, source_ref, valid_from,
+          1 - (embedding <=> ${vecStr}::vector) as cosine
+        FROM facts
+        WHERE tenant_id = ${tenantId}::uuid
+          AND embedding IS NOT NULL
+          AND valid_until IS NULL
+        ORDER BY embedding <=> ${vecStr}::vector
+        LIMIT ${SEARCH_CANDIDATE_POOL}
+      `);
+
+      const factRows = factResults.rows ?? (factResults as any);
+      for (const row of factRows) {
+        candidates.push({
+          id: row.id,
+          type: "fact",
+          title: `${row.entity_slug} (${row.kind})`,
+          content: row.content,
+          score: Number(row.cosine),
+          sourceType: row.source_type,
+          sourceRef: row.source_ref,
+          sourceAuthor: null,
+          validFrom: row.valid_from,
+          entitySlug: row.entity_slug,
+          cosine: Number(row.cosine),
+          confidence: Number(row.confidence),
+        });
+      }
+    } catch (err) {
+      // Vector search is fail-open: if it errors, keyword search still works
+      console.error("[Search] Vector search failed (continuing with keyword only):", err);
+    }
+
+    return candidates;
   }
 
   /**

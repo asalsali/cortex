@@ -1,0 +1,182 @@
+.page {
+  max-width: 800px;
+}
+
+.header {
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  padding: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  transition: all 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--border-primary);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.iconBox {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.iconSlack {
+  background: rgba(224, 30, 90, 0.12);
+  color: #e01e5a;
+}
+
+.iconNotion {
+  background: rgba(232, 234, 237, 0.08);
+  color: #e8eaed;
+}
+
+.iconGit {
+  background: rgba(240, 136, 62, 0.12);
+  color: #f0883e;
+}
+
+.iconManual {
+  background: rgba(124, 92, 252, 0.12);
+  color: #7c5cfc;
+}
+
+.cardInfo {
+  flex: 1;
+}
+
+.cardName {
+  font-size: 15px;
+  font-weight: 550;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.cardStatus {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.statusConnected {
+  background: var(--status-current);
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.4);
+}
+
+.statusPending {
+  background: var(--status-pending);
+  box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+}
+
+.statusAvailable {
+  background: var(--text-muted);
+}
+
+.statusTextConnected {
+  color: var(--status-current);
+}
+
+.statusTextPending {
+  color: var(--status-pending);
+}
+
+.statusTextAvailable {
+  color: var(--text-muted);
+}
+
+.connectBtn {
+  padding: 7px 16px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.connectBtnPrimary {
+  composes: connectBtn;
+  background: var(--accent-primary);
+  color: white;
+}
+
+.connectBtnPrimary:hover {
+  background: var(--accent-secondary);
+}
+
+.connectBtnSecondary {
+  composes: connectBtn;
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-primary);
+}
+
+.connectBtnSecondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.connectBtnDisabled {
+  composes: connectBtn;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.cardDesc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.cardMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
