@@ -17,13 +17,19 @@ import { startMcpServer } from "./mcp/server";
 
 // ─── Database ────────────────────────────────────────────────────
 
-const db = createDb();
+let db: ReturnType<typeof createDb> | null = null;
+let searchPipeline: SearchPipeline | null = null;
+let factsEngine: FactsEngine | null = null;
+let knowledgeGraph: KnowledgeGraph | null = null;
 
-// ─── Engine instances ────────────────────────────────────────────
-
-const searchPipeline = new SearchPipeline(db);
-const factsEngine = new FactsEngine(db);
-const knowledgeGraph = new KnowledgeGraph(db);
+try {
+  db = createDb();
+  searchPipeline = new SearchPipeline(db);
+  factsEngine = new FactsEngine(db);
+  knowledgeGraph = new KnowledgeGraph(db);
+} catch (e) {
+  console.warn("Database not available — API will return 503 on data routes");
+}
 
 // ─── App ─────────────────────────────────────────────────────────
 
@@ -47,10 +53,13 @@ app.use("*", errorHandler());
 
 // Inject engine instances into context
 app.use("/api/*", async (c, next) => {
+  if (!db) {
+    return c.json({ error: "Database not connected" }, 503);
+  }
   c.set("db", db);
-  c.set("search", searchPipeline);
-  c.set("facts", factsEngine);
-  c.set("graph", knowledgeGraph);
+  c.set("search", searchPipeline!);
+  c.set("facts", factsEngine!);
+  c.set("graph", knowledgeGraph!);
   await next();
 });
 
@@ -75,8 +84,12 @@ const MCP_PORT = Number(process.env.MCP_PORT) || 4001;
 console.log(`Cortex API server starting on port ${API_PORT}`);
 console.log(`Cortex MCP server starting on port ${MCP_PORT}`);
 
-// Start MCP server
-startMcpServer(MCP_PORT, { factsEngine, searchPipeline, knowledgeGraph });
+// Start MCP server (only if DB is available)
+if (factsEngine && searchPipeline && knowledgeGraph) {
+  startMcpServer(MCP_PORT, { factsEngine, searchPipeline, knowledgeGraph });
+} else {
+  console.warn("MCP server skipped — no database connection");
+}
 
 export default {
   port: API_PORT,
