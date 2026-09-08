@@ -21,26 +21,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <ToastProvider>
-            <div className={styles.wrapper}>
-              <Sidebar />
-              <div className={styles.main}>
-                <header className={styles.topbar}>
-                  <div className={styles.breadcrumb}>
-                    <span>Cortex</span>
-                    <span className={styles.breadcrumbSep}>/</span>
-                    <span className={styles.breadcrumbCurrent}>Knowledge Base</span>
-                  </div>
-                  <div className={styles.topbarRight}>
-                    <div className={styles.statusDot} />
-                    <span className={styles.statusLabel}>Last sync 2h ago</span>
-                  </div>
-                </header>
-                <main className={styles.content}>
-                  <DemoBanner />
-                  {children}
-                </main>
-              </div>
-            </div>
+            {children}
           </ToastProvider>
         </AuthProvider>
       </body>
