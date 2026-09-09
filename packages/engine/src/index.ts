@@ -1,6 +1,15 @@
 export { FactsEngine } from "./facts";
 export { SearchPipeline } from "./search";
 export { KnowledgeGraph } from "./graph";
+export { OfficeHoursEngine } from "./office-hours";
+export type {
+  OfficeHoursMessage,
+  OfficeHoursResponse,
+  OfficeHoursSession,
+  OfficeHoursIntent,
+  Citation,
+  SuggestedPerson,
+} from "./office-hours";
 export { classifyIntent } from "./intent";
 export type { IntentResult } from "./intent";
 export { EmbeddingService, getEmbeddingService } from "./embeddings";

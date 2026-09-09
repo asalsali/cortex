@@ -54,6 +54,7 @@ function getPageLabel(pathname: string): string {
   if (pathname.startsWith("/entities")) return "Entities";
   if (pathname.startsWith("/timeline")) return "Timeline";
   if (pathname.startsWith("/sources")) return "Sources";
+  if (pathname.startsWith("/office-hours")) return "Office Hours";
   if (pathname.startsWith("/dream")) return "Dream Cycle";
   if (pathname.startsWith("/settings")) return "Settings";
   return "Knowledge Base";

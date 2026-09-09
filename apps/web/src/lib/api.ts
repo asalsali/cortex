@@ -467,6 +467,82 @@ export async function ingest(content: string, title?: string): Promise<Page> {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Office Hours
+// ---------------------------------------------------------------------------
+
+export interface OfficeHoursCitation {
+  type: "fact" | "entity";
+  id: string;
+  label: string;
+  content: string;
+}
+
+export interface OfficeHoursSuggestedPerson {
+  slug: string;
+  name: string;
+  reason: string;
+}
+
+export interface OfficeHoursChatResponse {
+  message: string;
+  citations: OfficeHoursCitation[];
+  suggestedPeople: OfficeHoursSuggestedPerson[];
+  factsExtracted: number;
+  intent: string;
+  sessionId: string;
+}
+
+export interface OfficeHoursSessionSummary {
+  id: string;
+  title: string;
+  messageCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OfficeHoursSessionFull {
+  id: string;
+  tenantId: string;
+  title: string;
+  messages: Array<{
+    role: "user" | "assistant";
+    content: string;
+    timestamp: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** POST /api/v1/office-hours/chat */
+export async function officeHoursChat(
+  message: string,
+  sessionId?: string,
+): Promise<OfficeHoursChatResponse> {
+  return apiFetch<OfficeHoursChatResponse>("/office-hours/chat", {
+    method: "POST",
+    body: JSON.stringify({ message, sessionId }),
+  });
+}
+
+/** GET /api/v1/office-hours/sessions */
+export async function getOfficeHoursSessions(): Promise<OfficeHoursSessionSummary[]> {
+  return apiFetch<OfficeHoursSessionSummary[]>("/office-hours/sessions");
+}
+
+/** GET /api/v1/office-hours/sessions/:sessionId */
+export async function getOfficeHoursSession(
+  sessionId: string,
+): Promise<OfficeHoursSessionFull> {
+  return apiFetch<OfficeHoursSessionFull>(
+    `/office-hours/sessions/${encodeURIComponent(sessionId)}`,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Settings
+// ---------------------------------------------------------------------------
+
 /** GET /api/v1/settings */
 export async function getSettings(): Promise<TenantSettings> {
   return apiFetch<TenantSettings>("/settings");

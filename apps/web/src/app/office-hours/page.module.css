@@ -1,0 +1,250 @@
+/* ─── Office Hours — chat interface ───────────────────────────── */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--topbar-height) - 40px);
+  max-width: var(--content-max);
+}
+
+/* ─── Messages ────────────────────────────────────────────────── */
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-bottom: 24px;
+}
+
+.messageRow {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-secondary);
+  animation: slideIn 0.2s ease;
+}
+
+.messageRowUser {
+  composes: messageRow;
+}
+
+.messageRowAssistant {
+  composes: messageRow;
+}
+
+.messageLabel {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+
+.messageContent {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.messageContentAssistant {
+  composes: messageContent;
+  color: var(--text-secondary);
+}
+
+.messageTime {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-top: 6px;
+}
+
+/* ─── Citations ───────────────────────────────────────────────── */
+
+.citations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.citationChip {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.citationChip:hover {
+  color: var(--text-primary);
+  border-color: var(--border-focus);
+}
+
+/* ─── Suggested People ────────────────────────────────────────── */
+
+.suggestedPeople {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.personChip {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  text-decoration: none;
+}
+
+.personChip:hover {
+  color: var(--text-primary);
+  border-color: var(--border-focus);
+}
+
+/* ─── Facts Extracted ─────────────────────────────────────────── */
+
+.factsExtracted {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--status-current);
+  margin-top: 8px;
+}
+
+/* ─── Input ───────────────────────────────────────────────────── */
+
+.inputArea {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-primary);
+  padding-top: 16px;
+}
+
+.inputWrapper {
+  position: relative;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 48px;
+  max-height: 160px;
+  padding: 12px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  line-height: 1.55;
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.textarea::placeholder {
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+.textarea:focus {
+  border-color: var(--border-focus);
+}
+
+.inputHint {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-top: 6px;
+}
+
+/* ─── Empty State ─────────────────────────────────────────────── */
+
+.emptyState {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: -0.01em;
+}
+
+.emptySubtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+/* ─── Loading ─────────────────────────────────────────────────── */
+
+.thinking {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-secondary);
+}
+
+.thinkingLabel {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+
+.thinkingDots {
+  font-size: 14px;
+  color: var(--text-muted);
+  animation: shimmer 2s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    var(--text-muted) 0%,
+    var(--text-tertiary) 50%,
+    var(--text-muted) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Error ───────────────────────────────────────────────────── */
+
+.errorMessage {
+  font-size: 13px;
+  color: var(--status-error);
+  padding: 8px 0;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .page {
+    height: calc(100vh - var(--topbar-height) - 20px);
+  }
+
+  .citations {
+    gap: 4px;
+  }
+}

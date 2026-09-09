@@ -12,6 +12,7 @@ const navItems = [
   { href: "/entities", label: "Entities" },
   { href: "/timeline", label: "Timeline" },
   { href: "/sources", label: "Sources" },
+  { href: "/office-hours", label: "Office Hours" },
   { href: "/dream", label: "Dream Cycle" },
 ];
 

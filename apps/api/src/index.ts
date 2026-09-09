@@ -15,6 +15,7 @@ import { billingRoutes } from "./routes/billing";
 import { slackRoutes } from "./routes/slack";
 import { dreamRunsRoutes } from "./routes/dream-runs";
 import { integrationsRoutes } from "./routes/integrations";
+import { officeHoursRoutes } from "./routes/office-hours";
 import { startMcpServer } from "./mcp/server";
 
 // ─── Database ────────────────────────────────────────────────────
@@ -79,6 +80,7 @@ app.route("/api/v1", billingRoutes);
 app.route("/api/v1", slackRoutes);
 app.route("/api/v1", dreamRunsRoutes);
 app.route("/api/v1", integrationsRoutes);
+app.route("/api/v1", officeHoursRoutes);
 
 // ─── Start servers ───────────────────────────────────────────────
 
